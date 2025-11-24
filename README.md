@@ -2,15 +2,6 @@
 
 Je souhaite reproduire l'application Overseerr en y ajouter une connexion avec prowlarr pour récupérer les torrents, une connexion avec Alldebrid pour y ajouter le torrent et recupérer l'URL de streaming. Enfin je voudrais donner la possibilité à l'utilisateur de visionner le contenu directement depuis l'application. Cela me permet d'avoir un catalogue illimité avec TMDB.
 
-1. Gestion utilisateur
-   • Auth, login, register and admin.
-
-2. Display
-   • Connexion TMDB
-   • Affichage des films/séries disponibles.
-   • Recherche par titre, genre, année, etc.
-   • Affichage des détails (synopsis, casting, etc.).
-
 ## Project setup
 
 ```bash
@@ -41,17 +32,6 @@ $ npm run test:e2e
 
 # test coverage
 $ npm run test:cov
-```
-
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
 ```
 
 With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
