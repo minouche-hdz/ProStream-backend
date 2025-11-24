@@ -9,11 +9,11 @@ import { ProwlarrModule } from './prowlarr/prowlarr.module';
 import { AlldebridModule } from './alldebrid/alldebrid.module';
 import { StreamingModule } from './streaming/streaming.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './users/entities/user/user'; // Importez l'entité User
-import { WatchlistModule } from './watchlist/watchlist.module';
-import { Watchlist } from './watchlist/entities/watchlist.entity';
-import { ViewingHistoryModule } from './viewing-history/viewing-history.module';
-import { ViewingHistory } from './viewing-history/entities/viewing-history.entity';
+import { User } from '@src/users/entities/user/user'; // Importez l'entité User
+import { WatchlistModule } from '@src/watchlist/watchlist.module';
+import { Watchlist } from '@src/watchlist/entities/watchlist.entity';
+import { ViewingHistoryModule } from '@src/viewing-history/viewing-history.module';
+import { ViewingHistory } from '@src/viewing-history/entities/viewing-history.entity';
 
 @Module({
   imports: [

@@ -1,8 +1,8 @@
 import { Controller, Post, Delete, Get, Body, Param, UseGuards } from '@nestjs/common';
 import { WatchlistService } from './watchlist.service';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard/jwt-auth.guard';
-import { GetUser } from '../auth/get-user.decorator';
-import { User } from '../users/entities/user/user';
+import { JwtAuthGuard } from '@src/auth/jwt-auth.guard/jwt-auth.guard';
+import { GetUser } from '@src/auth/get-user.decorator';
+import { User } from '@src/users/entities/user/user';
 
 @Controller('watchlist')
 @UseGuards(JwtAuthGuard)

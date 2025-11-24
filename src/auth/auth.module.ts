@@ -3,9 +3,9 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { forwardRef } from '@nestjs/common'; // Import forwardRef
-import { AuthService } from './auth.service';
-import { UsersModule } from '../users/users.module';
-import { JwtStrategy } from './jwt.strategy/jwt.strategy';
+import { AuthService } from '@src/auth/auth.service';
+import { UsersModule } from '@src/users/users.module';
+import { JwtStrategy } from '@src/auth/jwt.strategy/jwt.strategy';
 
 @Module({
   imports: [

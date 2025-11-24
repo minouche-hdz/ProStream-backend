@@ -1,8 +1,8 @@
 import { Controller, Post, Get, Delete, Body, Param, UseGuards, Put } from '@nestjs/common';
-import { ViewingHistoryService } from './viewing-history.service';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard/jwt-auth.guard';
-import { GetUser } from '../auth/get-user.decorator';
-import { User } from '../users/entities/user/user';
+import { ViewingHistoryService } from '@src/viewing-history/viewing-history.service';
+import { JwtAuthGuard } from '@src/auth/jwt-auth.guard/jwt-auth.guard';
+import { GetUser } from '@src/auth/get-user.decorator';
+import { User } from '@src/users/entities/user/user';
 
 @Controller('viewing-history')
 @UseGuards(JwtAuthGuard)

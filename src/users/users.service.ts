@@ -6,10 +6,10 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { CreateUserDto } from './dto/create-user.dto/create-user.dto';
-import { LoginUserDto } from './dto/login-user.dto/login-user.dto';
-import { User } from './entities/user/user';
-import { UserRole } from './user-role.enum';
+import { CreateUserDto } from '@src/users/dto/create-user.dto/create-user.dto';
+import { LoginUserDto } from '@src/users/dto/login-user.dto/login-user.dto';
+import { User } from '@src/users/entities/user/user';
+import { UserRole } from '@src/users/user-role.enum';
 
 @Injectable()
 export class UsersService {

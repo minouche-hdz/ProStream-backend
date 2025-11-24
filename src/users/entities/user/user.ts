@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { UserRole } from '../../user-role.enum';
-import { Watchlist } from '../../watchlist/entities/watchlist.entity';
-import { ViewingHistory } from '../../viewing-history/entities/viewing-history.entity';
+import { UserRole } from '@src/users/user-role.enum';
+import { Watchlist } from '@src/watchlist/entities/watchlist.entity';
+import { ViewingHistory } from '@src/viewing-history/entities/viewing-history.entity';
 
 @Entity()
 export class User {
