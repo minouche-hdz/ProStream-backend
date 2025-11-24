@@ -1,9 +1,31 @@
-import { UserRole } from '../../user-role.enum'; // Corrected path again
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { UserRole } from '../../user-role.enum';
+import { Watchlist } from '../../watchlist/entities/watchlist.entity';
+import { ViewingHistory } from '../../viewing-history/entities/viewing-history.entity';
 
+@Entity()
 export class User {
+  @PrimaryGeneratedColumn('uuid')
   id: string;
-  username: string;
+
+  @Column()
+  nom: string;
+
+  @Column()
+  prenom: string;
+
+  @Column({ unique: true })
   email: string;
-  password?: string; // Optionnel pour les cas où le mot de passe n'est pas toujours exposé (ex: après hashage)
+
+  @Column({ nullable: true }) // Optionnel pour les cas où le mot de passe n'est pas toujours exposé (ex: après hashage)
+  password?: string;
+
+  @Column('simple-array')
   roles: UserRole[];
+
+  @OneToMany(() => Watchlist, watchlist => watchlist.user)
+  watchlists: Watchlist[];
+
+  @OneToMany(() => ViewingHistory, viewingHistory => viewingHistory.user)
+  viewingHistory: ViewingHistory[];
 }

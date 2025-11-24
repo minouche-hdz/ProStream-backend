@@ -3,8 +3,12 @@ import { UserRole } from '../../user-role.enum';
 
 export class CreateUserDto {
   @IsString()
-  @MinLength(3)
-  username: string;
+  @MinLength(2)
+  nom: string;
+
+  @IsString()
+  @MinLength(2)
+  prenom: string;
 
   @IsEmail()
   email: string;
