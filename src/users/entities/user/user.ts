@@ -23,9 +23,9 @@ export class User {
   @Column('simple-array')
   roles: UserRole[];
 
-  @OneToMany(() => Watchlist, watchlist => watchlist.user)
+  @OneToMany(() => Watchlist, (watchlist) => watchlist.user)
   watchlists: Watchlist[];
 
-  @OneToMany(() => ViewingHistory, viewingHistory => viewingHistory.user)
+  @OneToMany(() => ViewingHistory, (viewingHistory) => viewingHistory.user)
   viewingHistory: ViewingHistory[];
 }

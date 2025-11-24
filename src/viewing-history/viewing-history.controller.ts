@@ -1,4 +1,13 @@
-import { Controller, Post, Get, Delete, Body, Param, UseGuards, Put } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Delete,
+  Body,
+  Param,
+  UseGuards,
+  Put,
+} from '@nestjs/common';
 import { ViewingHistoryService } from '@src/viewing-history/viewing-history.service';
 import { JwtAuthGuard } from '@src/auth/jwt-auth.guard/jwt-auth.guard';
 import { GetUser } from '@src/auth/get-user.decorator';
@@ -40,7 +49,11 @@ export class ViewingHistoryController {
     @Param('tmdbId') tmdbId: number,
     @Param('mediaType') mediaType: string,
   ) {
-    await this.viewingHistoryService.removeViewingHistoryItem(user.id, tmdbId, mediaType);
+    await this.viewingHistoryService.removeViewingHistoryItem(
+      user.id,
+      tmdbId,
+      mediaType,
+    );
     return { message: 'Item removed from viewing history' };
   }
 }

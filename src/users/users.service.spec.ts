@@ -7,8 +7,6 @@ import * as bcrypt from 'bcrypt';
 import { UserRole } from '@src/users/user-role.enum';
 import { LoginUserDto } from '@src/users/dto/login-user.dto/login-user.dto';
 import { User } from '@src/users/entities/user/user';
-import { Repository } from 'typeorm';
-
 // Mock bcrypt
 jest.mock('bcrypt', () => ({
   hash: jest.fn((password: string) => Promise.resolve(`hashed_${password}`)),
@@ -19,7 +17,6 @@ jest.mock('bcrypt', () => ({
 
 describe('UsersService', () => {
   let service: UsersService;
-  let userRepository: Repository<User>;
 
   const mockUserRepository = {
     findOne: jest.fn(),
@@ -40,7 +37,6 @@ describe('UsersService', () => {
     }).compile();
 
     service = module.get<UsersService>(UsersService);
-    userRepository = module.get<Repository<User>>(getRepositoryToken(User));
 
     // Réinitialiser les mocks avant chaque test
     jest.clearAllMocks();
@@ -91,7 +87,9 @@ describe('UsersService', () => {
     });
 
     it('should throw ConflictException if email already exists', async () => {
-      mockUserRepository.findOne.mockResolvedValue({ email: createUserDto.email });
+      mockUserRepository.findOne.mockResolvedValue({
+        email: createUserDto.email,
+      });
 
       await expect(service.register(createUserDto)).rejects.toThrow(
         new ConflictException('Email already exists'),

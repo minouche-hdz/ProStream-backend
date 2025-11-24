@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { User } from '@src/users/entities/user/user';
 
 @Entity()
@@ -27,7 +33,7 @@ export class ViewingHistory {
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   lastWatched: Date;
 
-  @ManyToOne(() => User, user => user.viewingHistory)
+  @ManyToOne(() => User, (user) => user.viewingHistory)
   @JoinColumn({ name: 'userId' })
   user: User;
 }
