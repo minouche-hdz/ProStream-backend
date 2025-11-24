@@ -2,8 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Watchlist } from './entities/watchlist.entity';
-import { User } from '@src/users/entities/user/user';
-
 @Injectable()
 export class WatchlistService {
   constructor(
@@ -11,7 +9,13 @@ export class WatchlistService {
     private watchlistRepository: Repository<Watchlist>,
   ) {}
 
-  async addToWatchlist(userId: string, tmdbId: number, mediaType: string, title: string, posterPath: string): Promise<Watchlist> {
+  async addToWatchlist(
+    userId: string,
+    tmdbId: number,
+    mediaType: string,
+    title: string,
+    posterPath: string,
+  ): Promise<Watchlist> {
     const existingItem = await this.watchlistRepository.findOne({
       where: { userId, tmdbId, mediaType },
     });
@@ -30,7 +34,11 @@ export class WatchlistService {
     return this.watchlistRepository.save(newItem);
   }
 
-  async removeFromWatchlist(userId: string, tmdbId: number, mediaType: string): Promise<void> {
+  async removeFromWatchlist(
+    userId: string,
+    tmdbId: number,
+    mediaType: string,
+  ): Promise<void> {
     await this.watchlistRepository.delete({ userId, tmdbId, mediaType });
   }
 

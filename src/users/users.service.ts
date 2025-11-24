@@ -18,10 +18,14 @@ export class UsersService {
     private usersRepository: Repository<User>,
   ) {}
 
-  async register(createUserDto: CreateUserDto): Promise<Omit<User, 'password'>> {
+  async register(
+    createUserDto: CreateUserDto,
+  ): Promise<Omit<User, 'password'>> {
     const { nom, prenom, email, password, roles } = createUserDto;
 
-    const existingUser = await this.usersRepository.findOne({ where: { email } });
+    const existingUser = await this.usersRepository.findOne({
+      where: { email },
+    });
     if (existingUser) {
       throw new ConflictException('Email already exists');
     }

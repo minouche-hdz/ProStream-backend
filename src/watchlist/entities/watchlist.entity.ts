@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { User } from '@src/users/entities/user/user';
 
 @Entity()
@@ -21,7 +27,7 @@ export class Watchlist {
   @Column({ nullable: true })
   posterPath: string;
 
-  @ManyToOne(() => User, user => user.watchlists)
+  @ManyToOne(() => User, (user) => user.watchlists)
   @JoinColumn({ name: 'userId' })
   user: User;
 }

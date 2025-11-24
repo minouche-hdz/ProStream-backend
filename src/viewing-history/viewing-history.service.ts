@@ -2,8 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ViewingHistory } from './entities/viewing-history.entity';
-import { User } from '@src/users/entities/user/user';
-
 @Injectable()
 export class ViewingHistoryService {
   constructor(
@@ -44,7 +42,11 @@ export class ViewingHistoryService {
     return this.viewingHistoryRepository.find({ where: { userId } });
   }
 
-  async removeViewingHistoryItem(userId: string, tmdbId: number, mediaType: string): Promise<void> {
+  async removeViewingHistoryItem(
+    userId: string,
+    tmdbId: number,
+    mediaType: string,
+  ): Promise<void> {
     await this.viewingHistoryRepository.delete({ userId, tmdbId, mediaType });
   }
 }

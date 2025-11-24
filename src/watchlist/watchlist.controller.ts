@@ -1,4 +1,12 @@
-import { Controller, Post, Delete, Get, Body, Param, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Delete,
+  Get,
+  Body,
+  Param,
+  UseGuards,
+} from '@nestjs/common';
 import { WatchlistService } from './watchlist.service';
 import { JwtAuthGuard } from '@src/auth/jwt-auth.guard/jwt-auth.guard';
 import { GetUser } from '@src/auth/get-user.decorator';
@@ -17,7 +25,13 @@ export class WatchlistController {
     @Body('title') title: string,
     @Body('posterPath') posterPath: string,
   ) {
-    return this.watchlistService.addToWatchlist(user.id, tmdbId, mediaType, title, posterPath);
+    return this.watchlistService.addToWatchlist(
+      user.id,
+      tmdbId,
+      mediaType,
+      title,
+      posterPath,
+    );
   }
 
   @Delete(':tmdbId/:mediaType')

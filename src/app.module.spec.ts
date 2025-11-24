@@ -7,8 +7,6 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { User } from '@src/users/entities/user/user';
 import { Watchlist } from '@src/watchlist/entities/watchlist.entity';
 import { ViewingHistory } from '@src/viewing-history/entities/viewing-history.entity';
-import { AppModule } from './app.module';
-import { TypeOrmModule } from '@nestjs/typeorm';
 
 describe('AppModule', () => {
   let appModule: TestingModule;
@@ -19,23 +17,6 @@ describe('AppModule', () => {
         if (key === 'JWT_SECRET') return 'testsecret';
         return null;
       }),
-    };
-
-    const mockUsersService = {
-      findById: jest.fn((id: string) => {
-        if (id === '1') {
-          return {
-            id: '1',
-            nom: 'Test',
-            prenom: 'User',
-            email: 'test@example.com',
-            roles: ['user'],
-            password: 'hashedpassword',
-          };
-        }
-        return null;
-      }),
-      // Ajoutez d'autres méthodes mockées si nécessaire pour les tests
     };
 
     const mockUserRepository = {
