@@ -100,4 +100,110 @@ export class TmdbService {
         ),
     );
   }
+
+  getTrendingMovies(
+    time_window: 'day' | 'week',
+  ): Promise<TmdbMovieSearchResult> {
+    return lastValueFrom(
+      this.httpService
+        .get(
+          `${this.TMDB_BASE_URL}/trending/movie/${time_window}?language=${this.LANGUAGE}`,
+          {
+            params: {
+              api_key: this.TMDB_API_KEY,
+            },
+          },
+        )
+        .pipe(
+          map(
+            (response: AxiosResponse<TmdbMovieSearchResult>) => response.data,
+          ),
+        ),
+    );
+  }
+
+  getTopRatedMovies(): Promise<TmdbMovieSearchResult> {
+    return lastValueFrom(
+      this.httpService
+        .get(
+          `${this.TMDB_BASE_URL}/movie/top_rated?language=${this.LANGUAGE}`,
+          {
+            params: {
+              api_key: this.TMDB_API_KEY,
+            },
+          },
+        )
+        .pipe(
+          map(
+            (response: AxiosResponse<TmdbMovieSearchResult>) => response.data,
+          ),
+        ),
+    );
+  }
+
+  getNowPlayingMovies(): Promise<TmdbMovieSearchResult> {
+    return lastValueFrom(
+      this.httpService
+        .get(
+          `${this.TMDB_BASE_URL}/movie/now_playing?language=${this.LANGUAGE}`,
+          {
+            params: {
+              api_key: this.TMDB_API_KEY,
+            },
+          },
+        )
+        .pipe(
+          map(
+            (response: AxiosResponse<TmdbMovieSearchResult>) => response.data,
+          ),
+        ),
+    );
+  }
+
+  getUpcomingMovies(): Promise<TmdbMovieSearchResult> {
+    return lastValueFrom(
+      this.httpService
+        .get(`${this.TMDB_BASE_URL}/movie/upcoming?language=${this.LANGUAGE}`, {
+          params: {
+            api_key: this.TMDB_API_KEY,
+          },
+        })
+        .pipe(
+          map(
+            (response: AxiosResponse<TmdbMovieSearchResult>) => response.data,
+          ),
+        ),
+    );
+  }
+
+  discoverMoviesByGenre(genreId: number): Promise<TmdbMovieSearchResult> {
+    return lastValueFrom(
+      this.httpService
+        .get(
+          `${this.TMDB_BASE_URL}/discover/movie?with_genres=${genreId}&language=${this.LANGUAGE}`,
+          {
+            params: {
+              api_key: this.TMDB_API_KEY,
+            },
+          },
+        )
+        .pipe(
+          map(
+            (response: AxiosResponse<TmdbMovieSearchResult>) => response.data,
+          ),
+        ),
+    );
+  }
+
+  getMovieGenres(): Promise<any> {
+    return lastValueFrom(
+      this.httpService
+        .get(`${this.TMDB_BASE_URL}/genre/movie/list?language=${this.LANGUAGE}`, {
+          params: {
+            api_key: this.TMDB_API_KEY,
+          },
+        })
+        .pipe(map((response: AxiosResponse<any>) => response.data)),
+    );
+  }
 }

@@ -34,7 +34,6 @@ services:
     depends_on:
       - db
     volumes:
-      - .:/app
       - /app/node_modules # Exclure node_modules du montage pour éviter les problèmes de dépendances
 
 volumes:
