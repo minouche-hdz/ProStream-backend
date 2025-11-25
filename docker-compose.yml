@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:13
+    restart: always
+    environment:
+      POSTGRES_USER: prostream_user
+      POSTGRES_PASSWORD: prostream_password
+      POSTGRES_DB: prostream_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      DB_HOST: db
+      DB_PORT: ${DB_PORT}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_DATABASE: ${DB_DATABASE}
+      JWT_SECRET: ${JWT_SECRET}
+      TMDB_API_KEY: ${TMDB_API_KEY}
+      PROWLARR_API_KEY: ${PROWLARR_API_KEY}
+      PROWLARR_BASE_URL: ${PROWLARR_BASE_URL}
+      ALLDEBRID_API_KEY: ${ALLDEBRID_API_KEY}
+      CORS_ORIGIN: ${CORS_ORIGIN}
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+      - /app/node_modules # Exclure node_modules du montage pour éviter les problèmes de dépendances
+
+volumes:
+  postgres_data:
