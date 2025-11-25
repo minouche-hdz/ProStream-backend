@@ -124,4 +124,107 @@ export class TmdbController {
   async getTVShowDetails(@Param('id') id: string): Promise<any> {
     return this.tmdbService.getTVShowDetails(parseInt(id, 10));
   }
+
+  @Get('trending/:time_window')
+  @ApiOperation({ summary: 'Obtenir les films tendances' })
+  @ApiParam({
+    name: 'time_window',
+    description: 'Fenêtre de temps (day ou week)',
+    type: String,
+    enum: ['day', 'week'],
+    example: 'day',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Liste des films tendances',
+    // type: [MovieDto],
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Non autorisé',
+  })
+  async getTrendingMovies(
+    @Param('time_window') time_window: 'day' | 'week',
+  ): Promise<any> {
+    return this.tmdbService.getTrendingMovies(time_window);
+  }
+
+  @Get('top-rated')
+  @ApiOperation({ summary: 'Obtenir les films les mieux notés' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Liste des films les mieux notés',
+    // type: [MovieDto],
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Non autorisé',
+  })
+  async getTopRatedMovies(): Promise<any> {
+    return this.tmdbService.getTopRatedMovies();
+  }
+
+  @Get('now-playing')
+  @ApiOperation({ summary: 'Obtenir les films en cours de lecture' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Liste des films en cours de lecture',
+    // type: [MovieDto],
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Non autorisé',
+  })
+  async getNowPlayingMovies(): Promise<any> {
+    return this.tmdbService.getNowPlayingMovies();
+  }
+
+  @Get('upcoming')
+  @ApiOperation({ summary: 'Obtenir les films à venir' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Liste des films à venir',
+    // type: [MovieDto],
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Non autorisé',
+  })
+  async getUpcomingMovies(): Promise<any> {
+    return this.tmdbService.getUpcomingMovies();
+  }
+
+  @Get('discover/movie')
+  @ApiOperation({ summary: 'Découvrir des films par genre' })
+  @ApiQuery({
+    name: 'genreId',
+    description: 'ID du genre pour la découverte de films',
+    type: String,
+    example: '28', // Action
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Liste des films découverts par genre',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Non autorisé',
+  })
+  async discoverMoviesByGenre(@Query('genreId') genreId: string): Promise<any> {
+    return this.tmdbService.discoverMoviesByGenre(parseInt(genreId, 10));
+  }
+
+  @Get('genres/movie')
+  @ApiOperation({ summary: 'Obtenir la liste des genres de films' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Liste des genres de films',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Non autorisé',
+  })
+  async getMovieGenres(): Promise<any> {
+    return this.tmdbService.getMovieGenres();
+  }
 }

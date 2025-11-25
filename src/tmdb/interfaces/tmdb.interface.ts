@@ -125,3 +125,12 @@ export interface TmdbTVShowDetails extends TmdbTVShow {
   tagline: string;
   type: string;
 }
+
+export interface TmdbMovieGenre {
+  id: number;
+  name: string;
+}
+
+export interface TmdbMovieGenreResult {
+  genres: TmdbMovieGenre[];
+}
