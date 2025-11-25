@@ -16,9 +16,12 @@ describe('AuthService', () => {
   const mockUser: User = {
     id: '1',
     email: 'test@example.com',
-    username: 'testuser',
+    nom: 'Test',
+    prenom: 'User',
     password: 'hashedPassword',
     roles: [UserRole.USER],
+    watchlists: [],
+    viewingHistory: [],
   };
 
   beforeEach(async () => {
@@ -68,8 +71,11 @@ describe('AuthService', () => {
       expect(result).toEqual({
         id: mockUser.id,
         email: mockUser.email,
-        username: mockUser.username,
+        nom: mockUser.nom,
+        prenom: mockUser.prenom,
         roles: mockUser.roles,
+        watchlists: [],
+        viewingHistory: [],
       });
       expect(usersService.findByEmail).toHaveBeenCalledWith(mockUser.email);
       expect(usersService.comparePassword).toHaveBeenCalledWith(
@@ -141,7 +147,7 @@ describe('AuthService', () => {
         email: mockUser.email,
         sub: mockUser.id,
         roles: mockUser.roles,
-      } as any); // Cast to any to bypass type checking for payload
+      });
     });
 
     it('should throw UnauthorizedException if user login fails', async () => {
@@ -159,7 +165,8 @@ describe('AuthService', () => {
 
   describe('register', () => {
     const createUserDto: CreateUserDto = {
-      username: 'newuser',
+      nom: 'New',
+      prenom: 'User',
       email: 'new@example.com',
       password: 'newpassword',
       roles: [UserRole.USER],
