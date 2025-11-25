@@ -15,10 +15,13 @@ describe('UsersController', () => {
 
   const mockUser: User = {
     id: '1',
-    username: 'testuser',
+    nom: 'Test',
+    prenom: 'User',
     email: 'test@example.com',
     password: 'hashedPassword',
     roles: [UserRole.USER],
+    watchlists: [],
+    viewingHistory: [],
   };
 
   const mockAuthService = {
@@ -62,16 +65,20 @@ describe('UsersController', () => {
   describe('register', () => {
     it('should register a new user', async () => {
       const createUserDto: CreateUserDto = {
-        username: 'newuser',
+        nom: 'New',
+        prenom: 'User',
         email: 'new@example.com',
         password: 'password123',
         roles: [UserRole.USER],
       };
       const registeredUser: User = {
         ...mockUser,
-        ...createUserDto,
         id: '2',
+        nom: createUserDto.nom,
+        prenom: createUserDto.prenom,
+        email: createUserDto.email,
         password: 'hashedPassword',
+        roles: createUserDto.roles,
       };
       mockUsersService.register.mockResolvedValue(registeredUser);
 

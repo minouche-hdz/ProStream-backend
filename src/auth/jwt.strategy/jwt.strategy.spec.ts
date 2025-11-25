@@ -44,10 +44,13 @@ describe('JwtStrategy', () => {
     it('should return a user if valid payload and user exists', async () => {
       const mockUser: User = {
         id: '1',
-        username: 'testuser', // Added username
+        nom: 'Test',
+        prenom: 'User',
         email: 'test@example.com',
         password: 'hashedpassword',
-        roles: [UserRole.USER], // Use UserRole enum
+        roles: [UserRole.USER],
+        watchlists: [],
+        viewingHistory: [],
       };
       (usersService.findById as jest.Mock).mockResolvedValue(mockUser);
 
@@ -61,9 +64,12 @@ describe('JwtStrategy', () => {
       expect(usersService.findById).toHaveBeenCalledWith('1');
       expect(result).toEqual({
         id: '1',
-        username: 'testuser',
+        nom: 'Test',
+        prenom: 'User',
         email: 'test@example.com',
         roles: [UserRole.USER],
+        watchlists: [],
+        viewingHistory: [],
       });
     });
 

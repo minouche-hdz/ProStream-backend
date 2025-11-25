@@ -67,7 +67,7 @@ describe('AlldebridController', () => {
       mockAlldebridService.urlToMagnet.mockResolvedValue(magnetLink);
       mockAlldebridService.addMagnet.mockResolvedValue(mockResponse);
 
-      const result = await controller.addMagnet(downloadUrl);
+      const result = await controller.addMagnet({ downloadUrl });
       expect(mockAlldebridService.urlToMagnet).toHaveBeenCalledWith(
         downloadUrl,
       );
@@ -93,7 +93,7 @@ describe('AlldebridController', () => {
 
       mockAlldebridService.getStreamingLink.mockResolvedValue(mockResponse);
 
-      const result = await controller.getStreamingLink(link);
+      const result = await controller.getStreamingLink({ link });
       expect(mockAlldebridService.getStreamingLink).toHaveBeenCalledWith(link);
       expect(result).toEqual(mockResponse);
     });
@@ -192,7 +192,7 @@ describe('AlldebridController', () => {
         streamingLinkResponse,
       );
 
-      const result = await controller.getStreamFromMagnet(downloadUrl);
+      const result = await controller.getStreamFromMagnet({ downloadUrl });
 
       expect(mockAlldebridService.urlToMagnet).toHaveBeenCalledWith(
         downloadUrl,
