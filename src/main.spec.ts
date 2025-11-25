@@ -41,7 +41,7 @@ jest.mock('@nestjs/swagger', () => ({
 describe('main.ts', () => {
   it('should call NestFactory.create, configure Swagger, and app.listen', async () => {
     // Import main.ts to trigger bootstrap()
-    await import('../dist/main.js'); // Importation du fichier compilé depuis le répertoire dist
+    await import('./main'); // Importation du fichier compilé depuis le répertoire dist
     const app = await NestFactory.create(AppModule);
 
     expect(NestFactory.create).toHaveBeenCalledWith(AppModule);
