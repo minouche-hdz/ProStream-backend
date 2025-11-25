@@ -8,6 +8,7 @@ jest.mock('@nestjs/core', () => ({
     create: jest.fn().mockResolvedValue({
       listen: jest.fn(() => Promise.resolve(undefined)),
       close: jest.fn(() => Promise.resolve(undefined)),
+      enableCors: jest.fn().mockReturnThis(), // Ajout du mock pour enableCors
       getHttpAdapter: jest.fn().mockReturnValue({
         getType: jest.fn().mockReturnValue('express'), // Ou 'fastify' si vous l'utilisez
       }),
@@ -40,7 +41,7 @@ jest.mock('@nestjs/swagger', () => ({
 describe('main.ts', () => {
   it('should call NestFactory.create, configure Swagger, and app.listen', async () => {
     // Import main.ts to trigger bootstrap()
-    await import('./main'); // Suppression de l'extension .js
+    await import('../dist/main.js'); // Importation du fichier compilé depuis le répertoire dist
     const app = await NestFactory.create(AppModule);
 
     expect(NestFactory.create).toHaveBeenCalledWith(AppModule);
@@ -53,6 +54,9 @@ describe('main.ts', () => {
       app,
       expect.any(Object),
     );
-    expect(app.listen).toHaveBeenCalledWith(process.env.PORT ?? 3000);
+    expect(app.listen).toHaveBeenCalledWith(
+      process.env.PORT ?? 3000,
+      '0.0.0.0',
+    );
   });
 });
