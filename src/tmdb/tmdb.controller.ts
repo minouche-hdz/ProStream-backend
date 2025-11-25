@@ -125,7 +125,7 @@ export class TmdbController {
     return this.tmdbService.getTVShowDetails(parseInt(id, 10));
   }
 
-  @Get('trending/:time_window')
+  @Get('trending/movie/:time_window')
   @ApiOperation({ summary: 'Obtenir les films tendances' })
   @ApiParam({
     name: 'time_window',
@@ -149,7 +149,7 @@ export class TmdbController {
     return this.tmdbService.getTrendingMovies(time_window);
   }
 
-  @Get('top-rated')
+  @Get('top-rated/movie')
   @ApiOperation({ summary: 'Obtenir les films les mieux notés' })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -164,7 +164,7 @@ export class TmdbController {
     return this.tmdbService.getTopRatedMovies();
   }
 
-  @Get('now-playing')
+  @Get('now-playing/movie')
   @ApiOperation({ summary: 'Obtenir les films en cours de lecture' })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -179,7 +179,7 @@ export class TmdbController {
     return this.tmdbService.getNowPlayingMovies();
   }
 
-  @Get('upcoming')
+  @Get('upcoming/movie')
   @ApiOperation({ summary: 'Obtenir les films à venir' })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -196,7 +196,62 @@ export class TmdbController {
 
   @Get('discover/movie')
   @ApiOperation({ summary: 'Découvrir des films par genre' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Liste des films découverts par genre',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Non autorisé',
+  })
+  @Get('discover')
+  @ApiOperation({ summary: 'Découvrir des films avec des filtres avancés' })
   @ApiQuery({
+    name: 'genreId',
+    description: 'ID du genre pour la découverte de films (optionnel)',
+    type: String,
+    required: false,
+    example: '28', // Action
+  })
+  @ApiQuery({
+    name: 'sortBy',
+    description: 'Critère de tri (ex: popularity.desc, release_date.desc)',
+    type: String,
+    required: false,
+    example: 'popularity.desc',
+  })
+  @ApiQuery({
+    name: 'year',
+    description: 'Année de sortie du film',
+    type: String,
+    required: false,
+    example: '2023',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Liste des films découverts',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Non autorisé',
+  })
+  async discoverMovies(@Query() queryParams: any): Promise<any> {
+    const params: any = {};
+    if (queryParams.genreId) {
+      params.with_genres = parseInt(queryParams.genreId, 10);
+    }
+    if (queryParams.sortBy) {
+      params.sort_by = queryParams.sortBy;
+    }
+    if (queryParams.year) {
+      params.primary_release_year = parseInt(queryParams.year, 10);
+    }
+    return this.tmdbService.discoverMovies(params);
+  }
+
+  @Get('discover/genre/:genreId')
+  @ApiOperation({ summary: 'Découvrir des films par genre' })
+  @ApiParam({
     name: 'genreId',
     description: 'ID du genre pour la découverte de films',
     type: String,
@@ -210,7 +265,7 @@ export class TmdbController {
     status: HttpStatus.UNAUTHORIZED,
     description: 'Non autorisé',
   })
-  async discoverMoviesByGenre(@Query('genreId') genreId: string): Promise<any> {
+  async discoverMoviesByGenre(@Param('genreId') genreId: string): Promise<any> {
     return this.tmdbService.discoverMoviesByGenre(parseInt(genreId, 10));
   }
 
@@ -226,5 +281,53 @@ export class TmdbController {
   })
   async getMovieGenres(): Promise<any> {
     return this.tmdbService.getMovieGenres();
+  }
+
+  @Get('movie/:id/credits')
+  @ApiOperation({ summary: "Obtenir les crédits d'un film par ID" })
+  @ApiParam({
+    name: 'id',
+    description: 'ID du film TMDB',
+    type: String,
+    example: '27205',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Crédits du film',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Non autorisé',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Film non trouvé',
+  })
+  async getMovieCredits(@Param('id') id: string): Promise<any> {
+    return this.tmdbService.getMovieCredits(parseInt(id, 10));
+  }
+
+  @Get('movie/:id/videos')
+  @ApiOperation({ summary: "Obtenir les vidéos d'un film par ID" })
+  @ApiParam({
+    name: 'id',
+    description: 'ID du film TMDB',
+    type: String,
+    example: '27205',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Vidéos du film',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Non autorisé',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Film non trouvé',
+  })
+  async getMovieVideos(@Param('id') id: string): Promise<any> {
+    return this.tmdbService.getMovieVideos(parseInt(id, 10));
   }
 }

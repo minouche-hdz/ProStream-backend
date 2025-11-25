@@ -176,17 +176,17 @@ export class TmdbService {
     );
   }
 
-  discoverMoviesByGenre(genreId: number): Promise<TmdbMovieSearchResult> {
+  discoverMovies(params: any): Promise<TmdbMovieSearchResult> {
+    const queryParams = {
+      api_key: this.TMDB_API_KEY,
+      language: this.LANGUAGE,
+      ...params,
+    };
     return lastValueFrom(
       this.httpService
-        .get(
-          `${this.TMDB_BASE_URL}/discover/movie?with_genres=${genreId}&language=${this.LANGUAGE}`,
-          {
-            params: {
-              api_key: this.TMDB_API_KEY,
-            },
-          },
-        )
+        .get(`${this.TMDB_BASE_URL}/discover/movie`, {
+          params: queryParams,
+        })
         .pipe(
           map(
             (response: AxiosResponse<TmdbMovieSearchResult>) => response.data,
@@ -195,14 +195,51 @@ export class TmdbService {
     );
   }
 
+  discoverMoviesByGenre(genreId: number): Promise<TmdbMovieSearchResult> {
+    return this.discoverMovies({ with_genres: genreId });
+  }
+
   getMovieGenres(): Promise<any> {
     return lastValueFrom(
       this.httpService
-        .get(`${this.TMDB_BASE_URL}/genre/movie/list?language=${this.LANGUAGE}`, {
-          params: {
-            api_key: this.TMDB_API_KEY,
+        .get(
+          `${this.TMDB_BASE_URL}/genre/movie/list?language=${this.LANGUAGE}`,
+          {
+            params: {
+              api_key: this.TMDB_API_KEY,
+            },
           },
-        })
+        )
+        .pipe(map((response: AxiosResponse<any>) => response.data)),
+    );
+  }
+
+  getMovieCredits(id: number): Promise<any> {
+    return lastValueFrom(
+      this.httpService
+        .get(
+          `${this.TMDB_BASE_URL}/movie/${id}/credits?language=${this.LANGUAGE}`,
+          {
+            params: {
+              api_key: this.TMDB_API_KEY,
+            },
+          },
+        )
+        .pipe(map((response: AxiosResponse<any>) => response.data)),
+    );
+  }
+
+  getMovieVideos(id: number): Promise<any> {
+    return lastValueFrom(
+      this.httpService
+        .get(
+          `${this.TMDB_BASE_URL}/movie/${id}/videos?language=${this.LANGUAGE}`,
+          {
+            params: {
+              api_key: this.TMDB_API_KEY,
+            },
+          },
+        )
         .pipe(map((response: AxiosResponse<any>) => response.data)),
     );
   }
