@@ -1,4 +1,12 @@
-import { Controller, Post, Get, Body, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Body,
+  UseGuards,
+  HttpStatus,
+  Query,
+} from '@nestjs/common';
 import { AlldebridService } from './alldebrid.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard/jwt-auth.guard';
 import {
@@ -6,40 +14,108 @@ import {
   AlldebridStreamingLinkResponse,
   AlldebridMagnetStatusResponse,
 } from './interfaces/alldebrid.interface';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiBody,
+  ApiQuery,
+} from '@nestjs/swagger';
+import { AddMagnetDto } from './dto/add-magnet.dto';
+import { GetStreamingLinkDto } from './dto/get-streaming-link.dto';
 
+@ApiTags('alldebrid')
 @UseGuards(JwtAuthGuard)
 @Controller('alldebrid')
+@ApiBearerAuth()
 export class AlldebridController {
   constructor(private readonly alldebridService: AlldebridService) {}
 
   @Post('add-magnet')
+  @ApiOperation({ summary: 'Ajouter un lien magnet à Alldebrid' })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    description: 'Lien magnet ajouté avec succès',
+    // type: AlldebridMagnetUploadResponse, // Supprimé car c'est une interface
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Non autorisé',
+  })
+  @ApiBody({ type: AddMagnetDto })
   async addMagnet(
-    @Body('downloadUrl') downloadUrl: string,
+    @Body() addMagnetDto: AddMagnetDto,
   ): Promise<AlldebridMagnetUploadResponse> {
-    const magnetContent = await this.alldebridService.urlToMagnet(downloadUrl);
+    const magnetContent = await this.alldebridService.urlToMagnet(
+      addMagnetDto.downloadUrl,
+    );
     return this.alldebridService.addMagnet(magnetContent);
   }
 
   @Post('streaming-link')
+  @ApiOperation({
+    summary: 'Obtenir un lien de streaming direct depuis Alldebrid',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Lien de streaming généré',
+    // type: AlldebridStreamingLinkResponse, // Supprimé car c'est une interface
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Non autorisé',
+  })
+  @ApiBody({ type: GetStreamingLinkDto })
   async getStreamingLink(
-    @Body('link') link: string,
+    @Body() getStreamingLinkDto: GetStreamingLinkDto,
   ): Promise<AlldebridStreamingLinkResponse> {
-    return this.alldebridService.getStreamingLink(link);
+    return this.alldebridService.getStreamingLink(getStreamingLinkDto.link);
   }
 
   @Get('magnet-status')
+  @ApiOperation({ summary: "Obtenir le statut d'un magnet Alldebrid" })
+  @ApiQuery({
+    name: 'magnetId',
+    description: 'ID du magnet Alldebrid',
+    type: String,
+    example: '1234567890abcdef12345678',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Statut du magnet',
+    // type: AlldebridMagnetStatusResponse, // Supprimé car c'est une interface
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Non autorisé',
+  })
   async getMagnetStatus(
-    @Body('magnetId') magnetId: string,
+    @Query('magnetId') magnetId: string,
   ): Promise<AlldebridMagnetStatusResponse> {
-    await this.alldebridService.getMagnetStatus(magnetId);
     return this.alldebridService.getMagnetStatus(magnetId);
   }
 
   @Post('streaming-link-magnet')
+  @ApiOperation({
+    summary: "Obtenir un lien de streaming à partir d'un lien magnet",
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Lien de streaming généré à partir du magnet',
+    // type: AlldebridStreamingLinkResponse, // Supprimé car c'est une interface
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Non autorisé',
+  })
+  @ApiBody({ type: AddMagnetDto })
   async getStreamFromMagnet(
-    @Body('downloadUrl') downloadUrl: string,
+    @Body() addMagnetDto: AddMagnetDto,
   ): Promise<AlldebridStreamingLinkResponse> {
-    const magnetContent = await this.alldebridService.urlToMagnet(downloadUrl);
+    const magnetContent = await this.alldebridService.urlToMagnet(
+      addMagnetDto.downloadUrl,
+    );
     const magnetResponse = await this.alldebridService.addMagnet(magnetContent);
     const magnetId = magnetResponse.data.magnets[0].id;
     const statusResponse =
