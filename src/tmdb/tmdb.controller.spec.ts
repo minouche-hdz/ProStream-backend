@@ -19,6 +19,15 @@ describe('TmdbController', () => {
     getPopularMovies: jest.fn(),
     getPopularTVShows: jest.fn(),
     getTVShowDetails: jest.fn(),
+    getTrendingMovies: jest.fn(),
+    getTopRatedMovies: jest.fn(),
+    getNowPlayingMovies: jest.fn(),
+    getUpcomingMovies: jest.fn(),
+    discoverMovies: jest.fn(),
+    discoverMoviesByGenre: jest.fn(),
+    getMovieGenres: jest.fn(),
+    getMovieCredits: jest.fn(),
+    getMovieVideos: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -240,6 +249,272 @@ describe('TmdbController', () => {
 
       const result = await controller.getTVShowDetails(id);
       expect(mockTmdbService.getTVShowDetails).toHaveBeenCalledWith(
+        parseInt(id, 10),
+      );
+      expect(result).toEqual(mockResult);
+    });
+  });
+
+  describe('getTrendingMovies', () => {
+    it('should return trending movies', async () => {
+      const timeWindow: 'day' | 'week' = 'day';
+      const mockResult: TmdbMovieSearchResultDto = {
+        page: 1,
+        results: [
+          {
+            id: 1,
+            title: 'Trending Movie',
+            adult: false,
+            backdrop_path: '',
+            genre_ids: [],
+            original_language: '',
+            original_title: '',
+            overview: '',
+            popularity: 0,
+            poster_path: '',
+            release_date: '',
+            video: false,
+            vote_average: 0,
+            vote_count: 0,
+          },
+        ],
+        total_pages: 1,
+        total_results: 1,
+      };
+      mockTmdbService.getTrendingMovies.mockResolvedValue(mockResult);
+
+      const result = await controller.getTrendingMovies(timeWindow);
+      expect(mockTmdbService.getTrendingMovies).toHaveBeenCalledWith(
+        timeWindow,
+      );
+      expect(result).toEqual(mockResult);
+    });
+  });
+
+  describe('getTopRatedMovies', () => {
+    it('should return top rated movies', async () => {
+      const mockResult: TmdbMovieSearchResultDto = {
+        page: 1,
+        results: [
+          {
+            id: 1,
+            title: 'Top Rated Movie',
+            adult: false,
+            backdrop_path: '',
+            genre_ids: [],
+            original_language: '',
+            original_title: '',
+            overview: '',
+            popularity: 0,
+            poster_path: '',
+            release_date: '',
+            video: false,
+            vote_average: 0,
+            vote_count: 0,
+          },
+        ],
+        total_pages: 1,
+        total_results: 1,
+      };
+      mockTmdbService.getTopRatedMovies.mockResolvedValue(mockResult);
+
+      const result = await controller.getTopRatedMovies();
+      expect(mockTmdbService.getTopRatedMovies).toHaveBeenCalled();
+      expect(result).toEqual(mockResult);
+    });
+  });
+
+  describe('getNowPlayingMovies', () => {
+    it('should return now playing movies', async () => {
+      const mockResult: TmdbMovieSearchResultDto = {
+        page: 1,
+        results: [
+          {
+            id: 1,
+            title: 'Now Playing Movie',
+            adult: false,
+            backdrop_path: '',
+            genre_ids: [],
+            original_language: '',
+            original_title: '',
+            overview: '',
+            popularity: 0,
+            poster_path: '',
+            release_date: '',
+            video: false,
+            vote_average: 0,
+            vote_count: 0,
+          },
+        ],
+        total_pages: 1,
+        total_results: 1,
+      };
+      mockTmdbService.getNowPlayingMovies.mockResolvedValue(mockResult);
+
+      const result = await controller.getNowPlayingMovies();
+      expect(mockTmdbService.getNowPlayingMovies).toHaveBeenCalled();
+      expect(result).toEqual(mockResult);
+    });
+  });
+
+  describe('getUpcomingMovies', () => {
+    it('should return upcoming movies', async () => {
+      const mockResult: TmdbMovieSearchResultDto = {
+        page: 1,
+        results: [
+          {
+            id: 1,
+            title: 'Upcoming Movie',
+            adult: false,
+            backdrop_path: '',
+            genre_ids: [],
+            original_language: '',
+            original_title: '',
+            overview: '',
+            popularity: 0,
+            poster_path: '',
+            release_date: '',
+            video: false,
+            vote_average: 0,
+            vote_count: 0,
+          },
+        ],
+        total_pages: 1,
+        total_results: 1,
+      };
+      mockTmdbService.getUpcomingMovies.mockResolvedValue(mockResult);
+
+      const result = await controller.getUpcomingMovies();
+      expect(mockTmdbService.getUpcomingMovies).toHaveBeenCalled();
+      expect(result).toEqual(mockResult);
+    });
+  });
+
+  describe('discoverMovies', () => {
+    it('should return discovered movies', async () => {
+      const queryParams = {
+        genreId: '28',
+        sortBy: 'popularity.desc',
+        year: '2023',
+      };
+      const mockResult: TmdbMovieSearchResultDto = {
+        page: 1,
+        results: [
+          {
+            id: 1,
+            title: 'Discovered Movie',
+            adult: false,
+            backdrop_path: '',
+            genre_ids: [],
+            original_language: '',
+            original_title: '',
+            overview: '',
+            popularity: 0,
+            poster_path: '',
+            release_date: '',
+            video: false,
+            vote_average: 0,
+            vote_count: 0,
+          },
+        ],
+        total_pages: 1,
+        total_results: 1,
+      };
+      mockTmdbService.discoverMovies.mockResolvedValue(mockResult);
+
+      const result = await controller.discoverMovies(queryParams);
+      expect(mockTmdbService.discoverMovies).toHaveBeenCalledWith({
+        with_genres: 28,
+        sort_by: 'popularity.desc',
+        primary_release_year: 2023,
+      });
+      expect(result).toEqual(mockResult);
+    });
+  });
+
+  describe('discoverMoviesByGenre', () => {
+    it('should return discovered movies by genre', async () => {
+      const genreId = '28';
+      const mockResult: TmdbMovieSearchResultDto = {
+        page: 1,
+        results: [
+          {
+            id: 1,
+            title: 'Genre Movie',
+            adult: false,
+            backdrop_path: '',
+            genre_ids: [],
+            original_language: '',
+            original_title: '',
+            overview: '',
+            popularity: 0,
+            poster_path: '',
+            release_date: '',
+            video: false,
+            vote_average: 0,
+            vote_count: 0,
+          },
+        ],
+        total_pages: 1,
+        total_results: 1,
+      };
+      mockTmdbService.discoverMoviesByGenre.mockResolvedValue(mockResult);
+
+      const result = await controller.discoverMoviesByGenre(genreId);
+      expect(mockTmdbService.discoverMoviesByGenre).toHaveBeenCalledWith(
+        parseInt(genreId, 10),
+      );
+      expect(result).toEqual(mockResult);
+    });
+  });
+
+  describe('getMovieGenres', () => {
+    it('should return movie genres', async () => {
+      const mockResult = {
+        genres: [
+          { id: 1, name: 'Action' },
+          { id: 2, name: 'Comedy' },
+        ],
+      };
+      mockTmdbService.getMovieGenres.mockResolvedValue(mockResult);
+
+      const result = await controller.getMovieGenres();
+      expect(mockTmdbService.getMovieGenres).toHaveBeenCalled();
+      expect(result).toEqual(mockResult);
+    });
+  });
+
+  describe('getMovieCredits', () => {
+    it('should return movie credits', async () => {
+      const id = '123';
+      const mockResult = {
+        id: 123,
+        cast: [{ name: 'Actor 1', character: 'Character 1' }],
+        crew: [{ name: 'Director 1', job: 'Director' }],
+      };
+      mockTmdbService.getMovieCredits.mockResolvedValue(mockResult);
+
+      const result = await controller.getMovieCredits(id);
+      expect(mockTmdbService.getMovieCredits).toHaveBeenCalledWith(
+        parseInt(id, 10),
+      );
+      expect(result).toEqual(mockResult);
+    });
+  });
+
+  describe('getMovieVideos', () => {
+    it('should return movie videos', async () => {
+      const id = '123';
+      const mockResult = {
+        id: 123,
+        results: [
+          { name: 'Trailer', key: 'abc', site: 'YouTube', type: 'Trailer' },
+        ],
+      };
+      mockTmdbService.getMovieVideos.mockResolvedValue(mockResult);
+
+      const result = await controller.getMovieVideos(id);
+      expect(mockTmdbService.getMovieVideos).toHaveBeenCalledWith(
         parseInt(id, 10),
       );
       expect(result).toEqual(mockResult);
