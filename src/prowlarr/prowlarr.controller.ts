@@ -8,6 +8,10 @@ import {
   ApiBearerAuth,
   ApiQuery,
 } from '@nestjs/swagger';
+import {
+  ProwlarrSearchResultDto,
+  ProwlarrIndexerDto,
+} from './dto/prowlarr-responses.dto';
 
 @ApiTags('prowlarr')
 @UseGuards(JwtAuthGuard)
@@ -27,13 +31,15 @@ export class ProwlarrController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Résultats de la recherche Prowlarr',
-    // type: [ProwlarrSearchResultDto], // Créer un DTO pour les résultats de recherche Prowlarr
+    type: ProwlarrSearchResultDto,
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
     description: 'Non autorisé',
   })
-  async search(@Query('query') query: string): Promise<any> {
+  async search(
+    @Query('query') query: string,
+  ): Promise<ProwlarrSearchResultDto> {
     return this.prowlarrService.search(query);
   }
 
@@ -44,13 +50,13 @@ export class ProwlarrController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Liste des indexeurs Prowlarr',
-    // type: [ProwlarrIndexerDto], // Créer un DTO pour les indexeurs Prowlarr
+    type: [ProwlarrIndexerDto],
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
     description: 'Non autorisé',
   })
-  async getIndexers(): Promise<any> {
+  async getIndexers(): Promise<ProwlarrIndexerDto[]> {
     return this.prowlarrService.getIndexers();
   }
 }

@@ -10,10 +10,10 @@ import {
 import { AlldebridService } from './alldebrid.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard/jwt-auth.guard';
 import {
-  AlldebridMagnetUploadResponse,
-  AlldebridStreamingLinkResponse,
-  AlldebridMagnetStatusResponse,
-} from './interfaces/alldebrid.interface';
+  AlldebridMagnetUploadResponseDto,
+  AlldebridStreamingLinkResponseDto,
+  AlldebridMagnetStatusResponseDto,
+} from './dto/alldebrid-responses.dto';
 import {
   ApiTags,
   ApiOperation,
@@ -37,7 +37,7 @@ export class AlldebridController {
   @ApiResponse({
     status: HttpStatus.CREATED,
     description: 'Lien magnet ajouté avec succès',
-    // type: AlldebridMagnetUploadResponse, // Supprimé car c'est une interface
+    type: AlldebridMagnetUploadResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
@@ -46,7 +46,7 @@ export class AlldebridController {
   @ApiBody({ type: AddMagnetDto })
   async addMagnet(
     @Body() addMagnetDto: AddMagnetDto,
-  ): Promise<AlldebridMagnetUploadResponse> {
+  ): Promise<AlldebridMagnetUploadResponseDto> {
     const magnetContent = await this.alldebridService.urlToMagnet(
       addMagnetDto.downloadUrl,
     );
@@ -60,7 +60,7 @@ export class AlldebridController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Lien de streaming généré',
-    // type: AlldebridStreamingLinkResponse, // Supprimé car c'est une interface
+    type: AlldebridStreamingLinkResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
@@ -69,7 +69,7 @@ export class AlldebridController {
   @ApiBody({ type: GetStreamingLinkDto })
   async getStreamingLink(
     @Body() getStreamingLinkDto: GetStreamingLinkDto,
-  ): Promise<AlldebridStreamingLinkResponse> {
+  ): Promise<AlldebridStreamingLinkResponseDto> {
     return this.alldebridService.getStreamingLink(getStreamingLinkDto.link);
   }
 
@@ -84,7 +84,7 @@ export class AlldebridController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Statut du magnet',
-    // type: AlldebridMagnetStatusResponse, // Supprimé car c'est une interface
+    type: AlldebridMagnetStatusResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
@@ -92,7 +92,7 @@ export class AlldebridController {
   })
   async getMagnetStatus(
     @Query('magnetId') magnetId: string,
-  ): Promise<AlldebridMagnetStatusResponse> {
+  ): Promise<AlldebridMagnetStatusResponseDto> {
     return this.alldebridService.getMagnetStatus(magnetId);
   }
 
@@ -103,7 +103,7 @@ export class AlldebridController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Lien de streaming généré à partir du magnet',
-    // type: AlldebridStreamingLinkResponse, // Supprimé car c'est une interface
+    type: AlldebridStreamingLinkResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
@@ -112,7 +112,7 @@ export class AlldebridController {
   @ApiBody({ type: AddMagnetDto })
   async getStreamFromMagnet(
     @Body() addMagnetDto: AddMagnetDto,
-  ): Promise<AlldebridStreamingLinkResponse> {
+  ): Promise<AlldebridStreamingLinkResponseDto> {
     const magnetContent = await this.alldebridService.urlToMagnet(
       addMagnetDto.downloadUrl,
     );
