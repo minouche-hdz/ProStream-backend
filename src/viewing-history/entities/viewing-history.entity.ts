@@ -28,7 +28,7 @@ export class ViewingHistory {
   posterPath: string;
 
   @Column({ type: 'float', default: 0 })
-  progress: number; // Progression de la lecture (en pourcentage ou en secondes)
+  progress: number = 0; // Progression de la lecture (en pourcentage ou en secondes)
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   lastWatched: Date;
