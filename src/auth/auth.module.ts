@@ -16,7 +16,6 @@ import { JwtStrategy } from '@src/auth/jwt.strategy/jwt.strategy';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         secret: configService.get('JWT_SECRET'),
-        signOptions: { expiresIn: '60m' },
       }),
     }),
     forwardRef(() => UsersModule), // Use forwardRef for UsersModule
