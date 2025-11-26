@@ -561,7 +561,7 @@ export class TmdbMovieCreditsCastDto {
   adult: boolean;
 
   @ApiProperty({
-    description: 'Genre de l\'acteur (1=femme, 2=homme, 0=non spécifié)',
+    description: "Genre de l'acteur (1=femme, 2=homme, 0=non spécifié)",
     example: 2,
   })
   gender: number;

@@ -7,7 +7,6 @@ import { LoginUserDto } from './dto/login-user.dto/login-user.dto';
 import { User } from './entities/user/user';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard/jwt-auth.guard';
 import { UserRole } from './user-role.enum';
-
 describe('UsersController', () => {
   let controller: UsersController;
   // let usersService: UsersService; // Removed as it's not used
@@ -106,7 +105,7 @@ describe('UsersController', () => {
   describe('getProfile', () => {
     it('should return the user profile from the request', () => {
       const requestWithUser = { user: mockUser };
-      const result = controller.getProfile(requestWithUser as any); // Cast to any to bypass type checking for RequestWithUser
+      const result = controller.getProfile(requestWithUser as any); // Cast en any pour simplifier le mock de Request
       expect(result).toEqual(mockUser);
     });
   });

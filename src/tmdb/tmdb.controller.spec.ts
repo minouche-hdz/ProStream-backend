@@ -3,11 +3,11 @@ import { TmdbController } from './tmdb.controller';
 import { TmdbService } from './tmdb.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard/jwt-auth.guard';
 import {
-  TmdbMovieSearchResult,
-  TmdbMovieDetails,
-  TmdbTVShowSearchResult,
-  TmdbTVShowDetails,
-} from './interfaces/tmdb.interface';
+  TmdbMovieSearchResultDto,
+  TmdbMovieDetailsDto,
+  TmdbTVShowSearchResultDto,
+  TmdbTVShowDetailsDto,
+} from './dto/tmdb-responses.dto';
 
 describe('TmdbController', () => {
   let controller: TmdbController;
@@ -48,7 +48,7 @@ describe('TmdbController', () => {
   describe('searchMovies', () => {
     it('should return movie search results', async () => {
       const query = 'test';
-      const mockResult: TmdbMovieSearchResult = {
+      const mockResult: TmdbMovieSearchResultDto = {
         page: 1,
         results: [
           {
@@ -82,7 +82,7 @@ describe('TmdbController', () => {
   describe('getMovieDetails', () => {
     it('should return movie details', async () => {
       const id = '123';
-      const mockResult: TmdbMovieDetails = {
+      const mockResult: TmdbMovieDetailsDto = {
         id: 123,
         title: 'Test Movie',
         adult: false,
@@ -122,7 +122,7 @@ describe('TmdbController', () => {
 
   describe('getPopularMovies', () => {
     it('should return popular movies', async () => {
-      const mockResult: TmdbMovieSearchResult = {
+      const mockResult: TmdbMovieSearchResultDto = {
         page: 1,
         results: [
           {
@@ -155,7 +155,7 @@ describe('TmdbController', () => {
 
   describe('getPopularTVShows', () => {
     it('should return popular TV shows', async () => {
-      const mockResult: TmdbTVShowSearchResult = {
+      const mockResult: TmdbTVShowSearchResultDto = {
         page: 1,
         results: [
           {
@@ -188,7 +188,7 @@ describe('TmdbController', () => {
   describe('getTVShowDetails', () => {
     it('should return TV show details', async () => {
       const id = '456';
-      const mockResult: TmdbTVShowDetails = {
+      const mockResult: TmdbTVShowDetailsDto = {
         id: 456,
         name: 'Test TV Show',
         backdrop_path: '',

@@ -19,12 +19,11 @@ import {
 import {
   TmdbMovieSearchResultDto,
   TmdbMovieDetailsDto,
-  TmdbMovieDto,
-  TmdbTVShowDto,
   TmdbTVShowDetailsDto,
   TmdbMovieGenreResultDto,
   TmdbMovieCreditsDto,
   TmdbMovieVideosDto,
+  TmdbTVShowSearchResultDto, // Assurez-vous que celui-ci est bien importé
 } from './dto/tmdb-responses.dto';
 
 @ApiTags('tmdb')
@@ -252,9 +251,18 @@ export class TmdbController {
     description: 'Non autorisé',
   })
   async discoverMovies(
-    @Query() queryParams: any,
+    @Query()
+    queryParams: {
+      genreId?: string;
+      sortBy?: string;
+      year?: string;
+    },
   ): Promise<TmdbMovieSearchResultDto> {
-    const params: any = {};
+    const params: {
+      with_genres?: number;
+      sort_by?: string;
+      primary_release_year?: number;
+    } = {};
     if (queryParams.genreId) {
       params.with_genres = parseInt(queryParams.genreId, 10);
     }

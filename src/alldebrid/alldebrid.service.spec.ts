@@ -3,7 +3,7 @@ import { AlldebridService } from './alldebrid.service';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { of, throwError } from 'rxjs';
-import axios from 'axios';
+import axios, { AxiosRequestHeaders } from 'axios'; // Import AxiosRequestHeaders
 import * as crypto from 'crypto';
 import {
   AlldebridMagnetUploadResponse,
@@ -299,8 +299,8 @@ describe('AlldebridService', () => {
           status: 200,
           statusText: 'OK',
           headers: {},
-          config: { headers: {} as any },
-        }) as any,
+          config: { headers: {} as AxiosRequestHeaders }, // Spécifier le type
+        }),
       );
       const result = await service.addMagnet('magnet:?xt=urn:btih:mockHash');
       expect(result).toEqual(mockResponse);
@@ -352,8 +352,8 @@ describe('AlldebridService', () => {
           status: 200,
           statusText: 'OK',
           headers: {},
-          config: { headers: {} as any },
-        }) as any,
+          config: { headers: {} as AxiosRequestHeaders }, // Spécifier le type
+        }),
       );
       const result = await service.getMagnetStatus('123');
       expect(result).toEqual(mockResponse);
@@ -398,8 +398,8 @@ describe('AlldebridService', () => {
           status: 200,
           statusText: 'OK',
           headers: {},
-          config: { headers: {} as any },
-        }) as any,
+          config: { headers: {} as AxiosRequestHeaders }, // Spécifier le type
+        }),
       );
       const result = await service.getStreamingLink(
         'http://alldebrid.com/link',
@@ -446,8 +446,8 @@ describe('AlldebridService', () => {
           status: 200,
           statusText: 'OK',
           headers: {},
-          config: { headers: {} as any },
-        }) as any,
+          config: { headers: {} as AxiosRequestHeaders }, // Spécifier le type
+        }),
       );
       const formData = new FormData();
       formData.append('id[]', '123');

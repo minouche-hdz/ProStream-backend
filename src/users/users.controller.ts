@@ -23,7 +23,9 @@ import {
 } from '@nestjs/swagger';
 
 // Définir une interface pour l'objet Request afin de typer req.user
-interface RequestWithUser extends Request {
+import { Request } from 'express'; // Importer Request depuis express
+
+export interface RequestWithUser extends Request {
   user: User;
 }
 
