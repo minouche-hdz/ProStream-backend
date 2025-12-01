@@ -14,6 +14,12 @@ FROM node:20-alpine
 
 WORKDIR /app
 
+# Installez FFMPEG
+RUN apk add --no-cache ffmpeg
+
+# Créez le répertoire hls_temp et définissez les permissions
+RUN mkdir -p /app/hls_temp && chmod -R 777 /app/hls_temp
+
 # Copiez uniquement les dépendances de production
 COPY package*.json ./
 RUN npm install --omit=dev
