@@ -9,6 +9,7 @@ import {
   NotFoundException,
   Logger,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { StreamingService } from './streaming.service';
 import type { Response } from 'express';

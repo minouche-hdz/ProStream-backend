@@ -34,7 +34,15 @@ export class ProwlarrService {
           },
         })
         .pipe(
-          map((response: AxiosResponse<ProwlarrSearchResult>) => response.data),
+          map((response: AxiosResponse<ProwlarrSearchResult>) => {
+            // Filtrer pour ne garder que les fichiers .mkv
+            const filteredResults = response.data.results.filter((item) =>
+              item.title.toLowerCase().endsWith('.mkv'),
+            );
+            return {
+              results: filteredResults,
+            };
+          }),
         ),
     );
   }

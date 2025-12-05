@@ -4,6 +4,7 @@ import { StreamingService } from './streaming.service';
 import { NotFoundException } from '@nestjs/common';
 import { Response } from 'express';
 import * as fs from 'fs';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard/jwt-auth.guard';
 
 // Mock des modules fs
 jest.mock('fs');
@@ -25,7 +26,10 @@ describe('StreamingController', () => {
           useValue: mockStreamingService,
         },
       ],
-    }).compile();
+    })
+      .overrideGuard(JwtAuthGuard)
+      .useValue({ canActivate: jest.fn(() => true) })
+      .compile();
 
     controller = module.get<StreamingController>(StreamingController);
 
