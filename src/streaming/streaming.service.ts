@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import ffmpeg from 'fluent-ffmpeg';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as os from 'os';
 
 // Assurez-vous que ffmpeg et ffprobe sont disponibles dans le PATH de l'environnement d'exécution.
 // Dans un conteneur Docker Alpine, ils sont généralement dans le PATH par défaut après installation.
@@ -14,7 +15,9 @@ import * as path from 'path';
 @Injectable()
 export class StreamingService implements OnModuleDestroy {
   private readonly logger = new Logger(StreamingService.name);
-  private readonly HLS_TEMP_DIR = '/app/hls_temp'; // Répertoire temporaire dans le conteneur
+  private readonly HLS_TEMP_DIR = fs.existsSync('/app')
+    ? '/app/hls_temp' // Environnement Docker
+    : path.join(os.tmpdir(), 'prostream_hls'); // Environnement local
   private readonly CLEANUP_INTERVAL_MS = 5 * 60 * 1000; // Nettoyage toutes les 5 minutes
   private readonly SESSION_TIMEOUT_MS = 60 * 60 * 1000; // Une session expire après 1 heure d'inactivité
   private cleanupTimer: NodeJS.Timeout | null = null;
@@ -240,7 +243,7 @@ export class StreamingService implements OnModuleDestroy {
         '-f',
         'hls',
         '-hls_time',
-        '10',
+        '2', // Segments de 2 secondes pour démarrage rapide
         '-hls_list_size',
         '0',
         '-hls_segment_type',
@@ -251,6 +254,17 @@ export class StreamingService implements OnModuleDestroy {
         'event',
         '-hls_segment_filename',
         segmentPath,
+        // Optimisations pour démarrage rapide
+        '-movflags',
+        '+faststart+frag_keyframe',
+        '-frag_duration',
+        '2000000', // 2 secondes en microsecondes
+        '-min_frag_duration',
+        '2000000',
+        '-g',
+        '48', // Keyframe toutes les 2 secondes (24fps * 2)
+        '-sc_threshold',
+        '0', // Désactiver la détection de changement de scène
       ])
       .output(playlistPath)
       .on('start', (commandLine) => {
@@ -297,7 +311,7 @@ export class StreamingService implements OnModuleDestroy {
         '-f',
         'hls',
         '-hls_time',
-        '10',
+        '2', // Segments de 2 secondes pour démarrage rapide
         '-hls_list_size',
         '0',
         '-hls_segment_type',
@@ -308,6 +322,13 @@ export class StreamingService implements OnModuleDestroy {
         'event',
         '-hls_segment_filename',
         segmentPath,
+        // Optimisations pour démarrage rapide
+        '-movflags',
+        '+faststart+frag_keyframe',
+        '-frag_duration',
+        '2000000', // 2 secondes en microsecondes
+        '-min_frag_duration',
+        '2000000',
       ])
       .output(playlistPath)
       .on('start', (commandLine) => {
