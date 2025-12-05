@@ -42,15 +42,13 @@ export class StreamingController {
       example1: {
         summary: 'Démarrage standard',
         value: {
-          mkvUrl:
-            'https://alldebrid.com/movie.mkv',
+          mkvUrl: 'https://alldebrid.com/movie.mkv',
         },
       },
       exampleWithTime: {
         summary: 'Démarrage avec un temps de départ (2 minutes)',
         value: {
-          mkvUrl:
-            'https://alldebrid.com/movie.mkv',
+          mkvUrl: 'https://alldebrid.com/movie.mkv',
           startTime: 120,
         },
       },

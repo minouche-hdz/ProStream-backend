@@ -10,8 +10,7 @@ import { ApiProperty } from '@nestjs/swagger';
 export class StartStreamDto {
   @ApiProperty({
     description: 'URL du fichier MKV à streamer',
-    example:
-      'https://alldebrid.com/movie.mkv',
+    example: 'https://alldebrid.com/movie.mkv',
   })
   @IsNotEmpty()
   @IsString()
