@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   db:
     image: postgres:13
@@ -35,6 +33,8 @@ services:
       - db
     volumes:
       - /app/node_modules # Exclure node_modules du montage pour éviter les problèmes de dépendances
+      - hls_data:/app/hls_temp # Volume pour persister les fichiers HLS
 
 volumes:
   postgres_data:
+  hls_data: # Définition du volume pour les données HLS
