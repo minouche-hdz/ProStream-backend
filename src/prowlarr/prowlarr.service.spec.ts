@@ -67,7 +67,7 @@ describe('ProwlarrService', () => {
       const mockSearchResults: ProwlarrSearchResult = {
         results: [
           {
-            title: 'Movie Title',
+            title: 'Movie Title.mkv',
             size: 1000,
             publishDate: '2023-01-01',
             downloadUrl: 'download1',
