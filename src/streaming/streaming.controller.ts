@@ -18,15 +18,17 @@ import {
   ApiResponse,
   ApiParam,
   ApiBody,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import * as fs from 'fs';
 import * as path from 'path';
 import { StartStreamDto } from './dto/start-stream.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard/jwt-auth.guard';
 
 @ApiTags('streaming')
-// @UseGuards(JwtAuthGuard) // Temporairement désactivé pour les tests
+@UseGuards(JwtAuthGuard)
 @Controller('streaming')
-// @ApiBearerAuth() // Temporairement désactivé pour les tests
+@ApiBearerAuth()
 export class StreamingController {
   private readonly logger = new Logger(StreamingController.name);
   private readonly HLS_TEMP_DIR = '/app/hls_temp'; // Doit correspondre à celui du service
