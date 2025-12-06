@@ -1,0 +1,55 @@
+# Prometheus Configuration for ProStream Backend
+
+global:
+  scrape_interval: 15s  # Scrape metrics every 15 seconds
+  evaluation_interval: 15s  # Evaluate rules every 15 seconds
+  external_labels:
+    monitor: 'prostream-monitor'
+
+# Alertmanager configuration (optionnel)
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            # - 'alertmanager:9093'
+
+# Rule files (optionnel)
+rule_files:
+  # - 'alerts.yml'
+
+# Scrape configurations
+scrape_configs:
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # NestJS Application Metrics
+  - job_name: 'prostream-app'
+    static_configs:
+      - targets:
+          - 'app1:9090'
+          - 'app2:9090'
+          - 'app3:9090'
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+  # PostgreSQL Metrics (avec postgres_exporter)
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+
+  # Redis Metrics (avec redis_exporter)
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis-exporter:9121']
+
+  # Node Exporter (métriques système)
+  - job_name: 'node'
+    static_configs:
+      - targets: ['node-exporter:9100']
+
+  # Nginx Metrics (avec nginx-prometheus-exporter)
+  - job_name: 'nginx'
+    static_configs:
+      - targets: ['nginx-exporter:9113']

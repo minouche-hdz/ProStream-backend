@@ -1,0 +1,206 @@
+version: '3.8'
+
+services:
+  # ============================================
+  # PostgreSQL Database
+  # ============================================
+  db:
+    image: postgres:13-alpine
+    container_name: prostream-db-prod
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+    ports:
+      - "127.0.0.1:5432:5432"  # Accessible seulement en local
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backups:/backups  # Pour les backups
+    networks:
+      - prostream-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # ============================================
+  # NestJS Application (3 instances pour load balancing)
+  # ============================================
+  app1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: prostream-app1
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      DB_HOST: db
+      DB_PORT: ${DB_PORT}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_DATABASE: ${DB_DATABASE}
+      JWT_SECRET: ${JWT_SECRET}
+      TMDB_API_KEY: ${TMDB_API_KEY}
+      PROWLARR_API_KEY: ${PROWLARR_API_KEY}
+      PROWLARR_BASE_URL: ${PROWLARR_BASE_URL}
+      ALLDEBRID_API_KEY: ${ALLDEBRID_API_KEY}
+      CORS_ORIGIN: ${CORS_ORIGIN}
+      PORT: 3000
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - hls_data:/app/hls_temp
+      - logs_data:/app/logs
+    networks:
+      - prostream-network
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  app2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: prostream-app2
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      DB_HOST: db
+      DB_PORT: ${DB_PORT}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_DATABASE: ${DB_DATABASE}
+      JWT_SECRET: ${JWT_SECRET}
+      TMDB_API_KEY: ${TMDB_API_KEY}
+      PROWLARR_API_KEY: ${PROWLARR_API_KEY}
+      PROWLARR_BASE_URL: ${PROWLARR_BASE_URL}
+      ALLDEBRID_API_KEY: ${ALLDEBRID_API_KEY}
+      CORS_ORIGIN: ${CORS_ORIGIN}
+      PORT: 3000
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - hls_data:/app/hls_temp
+      - logs_data:/app/logs
+    networks:
+      - prostream-network
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  app3:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: prostream-app3
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      DB_HOST: db
+      DB_PORT: ${DB_PORT}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_DATABASE: ${DB_DATABASE}
+      JWT_SECRET: ${JWT_SECRET}
+      TMDB_API_KEY: ${TMDB_API_KEY}
+      PROWLARR_API_KEY: ${PROWLARR_API_KEY}
+      PROWLARR_BASE_URL: ${PROWLARR_BASE_URL}
+      ALLDEBRID_API_KEY: ${ALLDEBRID_API_KEY}
+      CORS_ORIGIN: ${CORS_ORIGIN}
+      PORT: 3000
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - hls_data:/app/hls_temp
+      - logs_data:/app/logs
+    networks:
+      - prostream-network
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # ============================================
+  # Nginx Reverse Proxy
+  # ============================================
+  nginx:
+    image: nginx:alpine
+    container_name: prostream-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/prostream.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro  # Certificats SSL
+      - nginx_logs:/var/log/nginx
+    depends_on:
+      - app1
+      - app2
+      - app3
+    networks:
+      - prostream-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ============================================
+  # Redis Cache (Optionnel mais recommandé)
+  # ============================================
+  redis:
+    image: redis:7-alpine
+    container_name: prostream-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-changeme}
+    ports:
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - prostream-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+# ============================================
+# Networks
+# ============================================
+networks:
+  prostream-network:
+    driver: bridge
+
+# ============================================
+# Volumes
+# ============================================
+volumes:
+  postgres_data:
+    driver: local
+  hls_data:
+    driver: local
+  logs_data:
+    driver: local
+  nginx_logs:
+    driver: local
+  redis_data:
+    driver: local

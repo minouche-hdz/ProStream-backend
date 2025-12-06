@@ -68,11 +68,31 @@ Voici la liste des endpoints disponibles dans l'application :
 - `GET /tmdb/popular/tv` : Récupère la liste des séries TV populaires sur TMDB.
 - `GET /tmdb/tv/:id` : Récupère les détails d'une série TV spécifique par son ID TMDB.
 
+
 ### UsersController
 
 - `POST /users/register` : Enregistre un nouvel utilisateur.
 - `POST /users/login` : Connecte un utilisateur et retourne un jeton d'accès.
 - `GET /users/profile` : Récupère le profil de l'utilisateur connecté (nécessite une authentification JWT).
+
+## 📚 Documentation
+
+Ce projet dispose d'une documentation complète pour vous aider à comprendre, configurer et améliorer l'application :
+
+### 📖 Documentation Principale
+- **[INDEX.md](INDEX.md)** - Index complet de toute la documentation
+- **[SUMMARY.md](SUMMARY.md)** - Résumé de toutes les améliorations récentes
+- **[ARCHITECTURE.md](ARCHITECTURE.md)** - Architecture technique avec diagrammes
+
+### 🐳 Documentation Docker
+- **[DOCKER_IMPROVEMENTS.md](DOCKER_IMPROVEMENTS.md)** - Détails des optimisations Docker
+- **[.env.example](.env.example)** - Template des variables d'environnement
+
+### 📋 Guides Pratiques
+- **[RECOMMENDATIONS.md](RECOMMENDATIONS.md)** - Recommandations d'amélioration et roadmap
+- **[TESTING_GUIDE.md](TESTING_GUIDE.md)** - Guide complet de test
+
+**👉 Commencez par [INDEX.md](INDEX.md) pour naviguer dans la documentation !**
 
 ## Resources
 
@@ -86,3 +106,4 @@ Check out a few resources that may come in handy when working with NestJS:
 - Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
 - To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
 - Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+

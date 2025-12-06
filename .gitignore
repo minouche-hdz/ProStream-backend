@@ -54,3 +54,12 @@ pids
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# HLS streaming temporary files
+hls_temp/
+*.m3u8
+*.ts
+*.m4s
+
+# Docker volumes
+postgres_data/

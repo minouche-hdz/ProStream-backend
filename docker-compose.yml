@@ -1,7 +1,10 @@
+version: '3.8'
+
 services:
   db:
-    image: postgres:13
-    restart: always
+    image: postgres:13-alpine
+    container_name: prostream-db
+    restart: unless-stopped
     environment:
       POSTGRES_USER: prostream_user
       POSTGRES_PASSWORD: prostream_password
@@ -10,31 +13,57 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - prostream-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U prostream_user -d prostream_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
   app:
     build:
       context: .
       dockerfile: Dockerfile
+      target: production
+    container_name: prostream-app
+    restart: unless-stopped
     ports:
       - "3000:3000"
     environment:
+      NODE_ENV: production
       DB_HOST: db
-      DB_PORT: ${DB_PORT}
-      DB_USERNAME: ${DB_USERNAME}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_DATABASE: ${DB_DATABASE}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_USERNAME: ${DB_USERNAME:-prostream_user}
+      DB_PASSWORD: ${DB_PASSWORD:-prostream_password}
+      DB_DATABASE: ${DB_DATABASE:-prostream_db}
       JWT_SECRET: ${JWT_SECRET}
       TMDB_API_KEY: ${TMDB_API_KEY}
       PROWLARR_API_KEY: ${PROWLARR_API_KEY}
       PROWLARR_BASE_URL: ${PROWLARR_BASE_URL}
       ALLDEBRID_API_KEY: ${ALLDEBRID_API_KEY}
-      CORS_ORIGIN: ${CORS_ORIGIN}
+      CORS_ORIGIN: ${CORS_ORIGIN:-*}
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     volumes:
-      - /app/node_modules # Exclure node_modules du montage pour éviter les problèmes de dépendances
-      - hls_data:/app/hls_temp # Volume pour persister les fichiers HLS
+      - hls_data:/app/hls_temp
+    networks:
+      - prostream-network
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  prostream-network:
+    driver: bridge
 
 volumes:
   postgres_data:
-  hls_data: # Définition du volume pour les données HLS
+    driver: local
+  hls_data:
+    driver: local
