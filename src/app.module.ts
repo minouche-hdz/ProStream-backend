@@ -14,6 +14,7 @@ import { WatchlistModule } from '@src/watchlist/watchlist.module';
 import { Watchlist } from '@src/watchlist/entities/watchlist.entity';
 import { ViewingHistoryModule } from '@src/viewing-history/viewing-history.module';
 import { ViewingHistory } from '@src/viewing-history/entities/viewing-history.entity';
+import { PrometheusModule } from '@willsoto/nestjs-prometheus';
 
 @Module({
   imports: [
@@ -38,6 +39,12 @@ import { ViewingHistory } from '@src/viewing-history/entities/viewing-history.en
     StreamingModule,
     WatchlistModule,
     ViewingHistoryModule,
+    PrometheusModule.register({
+      path: '/metrics',
+      defaultMetrics: {
+        enabled: true,
+      },
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],
