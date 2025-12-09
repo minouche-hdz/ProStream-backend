@@ -54,3 +54,12 @@ pids
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# HLS streaming temporary files
+hls_temp/
+*.m3u8
+# *.ts # FIXME: This ignores all TypeScript files. Ensure HLS segments are in hls_temp/ or named uniquely.
+*.m4s
+
+# Docker volumes
+postgres_data/

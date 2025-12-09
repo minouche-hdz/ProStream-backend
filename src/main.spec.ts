@@ -8,9 +8,22 @@ jest.mock('@nestjs/core', () => ({
     create: jest.fn().mockResolvedValue({
       listen: jest.fn(() => Promise.resolve(undefined)),
       close: jest.fn(() => Promise.resolve(undefined)),
-      enableCors: jest.fn().mockReturnThis(), // Ajout du mock pour enableCors
+      enableCors: jest.fn().mockReturnThis(),
       getHttpAdapter: jest.fn().mockReturnValue({
-        getType: jest.fn().mockReturnValue('express'), // Ou 'fastify' si vous l'utilisez
+        getType: jest.fn().mockReturnValue('express'),
+      }),
+      useGlobalPipes: jest.fn().mockReturnThis(), // Ajout du mock pour useGlobalPipes
+      useGlobalFilters: jest.fn().mockReturnThis(), // Ajout du mock pour useGlobalFilters
+      get: jest.fn((token) => {
+        if (token.name === 'ConfigService') {
+          return {
+            get: jest.fn((key, defaultValue) => {
+              if (key === 'CLIENT_URL') return 'http://localhost:3000';
+              return defaultValue;
+            }),
+          };
+        }
+        return undefined;
       }),
     }),
   },
@@ -41,7 +54,7 @@ jest.mock('@nestjs/swagger', () => ({
 describe('main.ts', () => {
   it('should call NestFactory.create, configure Swagger, and app.listen', async () => {
     // Import main.ts to trigger bootstrap()
-    await import('./main'); // Importation du fichier compilé depuis le répertoire dist
+    await import('./main'); // Importation du fichier TypeScript original
     const app = await NestFactory.create(AppModule);
 
     expect(NestFactory.create).toHaveBeenCalledWith(AppModule);

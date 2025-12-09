@@ -7,10 +7,14 @@ import { LoginUserDto } from './dto/login-user.dto/login-user.dto';
 import { User } from './entities/user/user';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard/jwt-auth.guard';
 import { UserRole } from './user-role.enum';
+import { Request } from 'express';
+
+interface RequestWithUser extends Request {
+  user: User;
+}
+
 describe('UsersController', () => {
   let controller: UsersController;
-  // let usersService: UsersService; // Removed as it's not used
-  // let authService: AuthService; // Removed as it's not used
 
   const mockUser: User = {
     id: '1',
@@ -46,14 +50,11 @@ describe('UsersController', () => {
         },
       ],
     })
-      .overrideGuard(JwtAuthGuard) // Bypass JwtAuthGuard for controller tests
+      .overrideGuard(JwtAuthGuard)
       .useValue({ canActivate: () => true })
       .compile();
 
     controller = module.get<UsersController>(UsersController);
-    // usersService = module.get<UsersService>(UsersService); // Removed as it's not used
-    // authService = module.get<AuthService>(AuthService); // Removed as it's not used
-
     jest.clearAllMocks();
   });
 
@@ -104,8 +105,8 @@ describe('UsersController', () => {
 
   describe('getProfile', () => {
     it('should return the user profile from the request', () => {
-      const requestWithUser = { user: mockUser };
-      const result = controller.getProfile(requestWithUser as any); // Cast en any pour simplifier le mock de Request
+      const requestWithUser = { user: mockUser } as unknown as RequestWithUser;
+      const result = controller.getProfile(requestWithUser);
       expect(result).toEqual(mockUser);
     });
   });

@@ -1,0 +1,86 @@
+version: '3.8'
+
+services:
+  # ============================================
+  # Prometheus (Collecte des métriques)
+  # ============================================
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prostream-prometheus
+    restart: unless-stopped
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/console_templates'
+      - '--web.enable-lifecycle'
+    networks:
+      - prostream-network
+
+  # ============================================
+  # Grafana (Visualisation)
+  # ============================================
+  grafana:
+    image: grafana/grafana:latest
+    container_name: prostream-grafana
+    restart: unless-stopped
+    ports:
+      - "3001:3000" # Accessible sur http://IP_SERVEUR:3001
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=prostream_admin # CHANGEZ LE MOT DE PASSE AU PREMIER LOGIN
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+    networks:
+      - prostream-network
+    depends_on:
+      - prometheus
+
+  # ============================================
+  # Node Exporter (Métriques du serveur hôte)
+  # ============================================
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: prostream-node-exporter
+    restart: unless-stopped
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    networks:
+      - prostream-network
+
+  # ============================================
+  # cAdvisor (Métriques des conteneurs Docker)
+  # ============================================
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: prostream-cadvisor
+    restart: unless-stopped
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    networks:
+      - prostream-network
+
+networks:
+  prostream-network:
+    external: true # Utilise le réseau créé par le docker-compose principal
+
+volumes:
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local

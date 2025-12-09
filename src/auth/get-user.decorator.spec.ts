@@ -38,7 +38,7 @@ describe('GetUserDecorator', () => {
   it('should return the user from the request', () => {
     const mockRequest = {
       user: mockUser,
-    } as any;
+    };
 
     // Manually call the decorated method with a mock request
     const result = testController.testMethod(mockRequest.user);
@@ -49,7 +49,7 @@ describe('GetUserDecorator', () => {
   it('should return undefined if no user in request', () => {
     const mockRequest = {
       user: undefined,
-    } as any;
+    };
 
     // Manually call the decorated method with a mock request
     const result = testController.testMethod(mockRequest.user);

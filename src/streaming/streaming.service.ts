@@ -5,12 +5,33 @@ import ffmpeg from 'fluent-ffmpeg';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
+import { ChildProcess } from 'child_process';
 
 // Assurez-vous que ffmpeg et ffprobe sont disponibles dans le PATH de l'environnement d'exécution.
 // Dans un conteneur Docker Alpine, ils sont généralement dans le PATH par défaut après installation.
 // Si vous exécutez localement, assurez-vous que les chemins sont corrects pour votre système.
 // ffmpeg.setFfmpegPath('/opt/homebrew/bin/ffmpeg'); // Exemple pour macOS avec Homebrew
 // ffmpeg.setFfprobePath('/opt/homebrew/bin/ffprobe'); // Exemple pour macOS avec Homebrew
+
+interface FfprobeStream {
+  index: number;
+  codec_type?: string;
+  codec_name?: string;
+  width?: number;
+  height?: number;
+  bit_rate?: number;
+  tags?: {
+    language?: string;
+    [key: string]: any;
+  };
+  [key: string]: any;
+}
+
+interface FfprobeData {
+  streams: FfprobeStream[];
+  format?: any;
+  chapters?: any[];
+}
 
 @Injectable()
 export class StreamingService implements OnModuleDestroy {
@@ -21,6 +42,7 @@ export class StreamingService implements OnModuleDestroy {
   private readonly CLEANUP_INTERVAL_MS = 5 * 60 * 1000; // Nettoyage toutes les 5 minutes
   private readonly SESSION_TIMEOUT_MS = 60 * 60 * 1000; // Une session expire après 1 heure d'inactivité
   private cleanupTimer: NodeJS.Timeout | null = null;
+  private activeFfmpegProcesses: Map<string, ChildProcess> = new Map();
 
   constructor(
     private httpService: HttpService,
@@ -100,13 +122,13 @@ export class StreamingService implements OnModuleDestroy {
     });
   }
 
-  private async probeStream(url: string): Promise<any> {
+  private async probeStream(url: string): Promise<FfprobeData> {
     return new Promise((resolve, reject) => {
       ffmpeg.ffprobe(url, (err, metadata) => {
         if (err) {
           return reject(new Error(`FFprobe error: ${err.message}`));
         }
-        resolve(metadata);
+        resolve(metadata as unknown as FfprobeData);
       });
     });
   }
@@ -126,10 +148,10 @@ export class StreamingService implements OnModuleDestroy {
       fs.mkdirSync(sessionDir, { recursive: true });
 
       const metadata = await this.probeStream(mkvUrl);
-      const videoStream = metadata.streams.find(
+      const videoStream: FfprobeStream | undefined = metadata.streams.find(
         (s) => s.codec_type === 'video',
       );
-      const audioStreams = metadata.streams.filter(
+      const audioStreams: FfprobeStream[] = metadata.streams.filter(
         (s) => s.codec_type === 'audio',
       );
 
@@ -203,7 +225,7 @@ export class StreamingService implements OnModuleDestroy {
 
       // Ajouter la piste vidéo avec référence au groupe audio
       masterPlaylistContent += `#EXT-X-STREAM-INF:BANDWIDTH=${
-        videoStream.bit_rate || 1000000
+        (videoStream.bit_rate as number) || 1000000
       },RESOLUTION=${videoStream.width}x${videoStream.height},CODECS="avc1.64001f,mp4a.40.2"${audioPlaylistPaths.length > 0 ? ',AUDIO="audio"' : ''}\n`;
       masterPlaylistContent += `video/${videoPlaylistName}\n`;
 
@@ -269,6 +291,10 @@ export class StreamingService implements OnModuleDestroy {
       .output(playlistPath)
       .on('start', (commandLine) => {
         this.logger.log(`FFmpeg vidéo démarré : ${commandLine}`);
+        this.activeFfmpegProcesses.set(
+          `video-${sessionId}`,
+          ffmpegCommand.ffmpegProc as ChildProcess,
+        );
       })
       .on('error', (err, stdout, stderr) => {
         // Ignorer l'erreur si la session a déjà été nettoyée (ex: arrêt manuel)
@@ -279,10 +305,12 @@ export class StreamingService implements OnModuleDestroy {
         );
         this.logger.error(`FFmpeg stdout: ${stdout}`);
         this.logger.error(`FFmpeg stderr: ${stderr}`);
+        this.activeFfmpegProcesses.delete(`video-${sessionId}`);
         this.cleanupSession(sessionId);
       })
       .on('end', () => {
         this.logger.log(`FFmpeg vidéo terminé pour ${sessionId}.`);
+        this.activeFfmpegProcesses.delete(`video-${sessionId}`);
       })
       .run();
   }
@@ -333,6 +361,10 @@ export class StreamingService implements OnModuleDestroy {
       .output(playlistPath)
       .on('start', (commandLine) => {
         this.logger.log(`FFmpeg audio ${audioIndex} démarré : ${commandLine}`);
+        this.activeFfmpegProcesses.set(
+          `audio-${sessionId}-${audioIndex}`,
+          ffmpegCommand.ffmpegProc as ChildProcess,
+        );
       })
       .on('error', (err, stdout, stderr) => {
         // Ignorer l'erreur si la session a déjà été nettoyée
@@ -343,12 +375,14 @@ export class StreamingService implements OnModuleDestroy {
         );
         this.logger.error(`FFmpeg stdout: ${stdout}`);
         this.logger.error(`FFmpeg stderr: ${stderr}`);
+        this.activeFfmpegProcesses.delete(`audio-${sessionId}-${audioIndex}`);
         this.cleanupSession(sessionId);
       })
       .on('end', () => {
         this.logger.log(
           `FFmpeg audio ${audioIndex} terminé pour ${sessionId}.`,
         );
+        this.activeFfmpegProcesses.delete(`audio-${sessionId}-${audioIndex}`);
       })
       .run();
   }
@@ -376,7 +410,23 @@ export class StreamingService implements OnModuleDestroy {
     const sessionDir = path.join(this.HLS_TEMP_DIR, sessionId);
     if (fs.existsSync(sessionDir)) {
       this.logger.log(`Nettoyage de la session HLS : ${sessionId}`);
+      // Arrêter les processus FFmpeg associés à cette session
+      this.stopFfmpegProcess(`video-${sessionId}`);
+      for (const key of this.activeFfmpegProcesses.keys()) {
+        if (key.startsWith(`audio-${sessionId}`)) {
+          this.stopFfmpegProcess(key);
+        }
+      }
       fs.rmSync(sessionDir, { recursive: true, force: true });
+    }
+  }
+
+  private stopFfmpegProcess(key: string): void {
+    const process = this.activeFfmpegProcesses.get(key);
+    if (process) {
+      process.kill('SIGKILL'); // Arrêter le processus FFmpeg
+      this.activeFfmpegProcesses.delete(key);
+      this.logger.log(`Processus FFmpeg ${key} arrêté.`);
     }
   }
 
