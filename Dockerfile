@@ -32,8 +32,8 @@ RUN npm run build
 # ============================================
 FROM node:24-alpine AS production
 
-# Installer ffmpeg et ffprobe (nécessaires pour le streaming)
-RUN apk add --no-cache ffmpeg
+# Installer ffmpeg et ffprobe (nécessaires pour le streaming) et su-exec (pour l'entrypoint)
+RUN apk add --no-cache ffmpeg su-exec
 
 # Créer un utilisateur non-root pour des raisons de sécurité
 RUN addgroup -g 1001 -S nodejs && \
@@ -55,8 +55,14 @@ COPY --from=build /app/dist ./dist
 RUN mkdir -p /app/hls_temp && \
     chown -R nestjs:nodejs /app
 
-# Changer vers l'utilisateur non-root
-USER nestjs
+# Copier le script d'entrypoint
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+# Changer vers l'utilisateur non-root est géré par l'entrypoint
+# USER nestjs
+
+ENTRYPOINT ["docker-entrypoint.sh"]
 
 # Définir les variables d'environnement
 ENV NODE_ENV=production

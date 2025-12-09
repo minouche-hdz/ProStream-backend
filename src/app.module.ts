@@ -18,17 +18,25 @@ import { PrometheusModule } from '@willsoto/nestjs-prometheus';
 import { CacheModule } from '@nestjs/cache-manager';
 import { ThrottlerModule } from '@nestjs/throttler';
 import * as redisStore from 'cache-manager-redis-store';
+import { HttpModule, HttpService } from '@nestjs/axios';
+import { setupAxiosRetryInterceptor } from './common/interceptors/axios-retry.interceptor';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    HttpModule.registerAsync({
+      useFactory: () => ({
+        timeout: 5000,
+        maxRedirects: 5,
+      }),
+    }),
     // Cache Redis (Global)
     CacheModule.registerAsync({
       isGlobal: true,
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
+      useFactory: (configService: ConfigService) => ({
         store: redisStore,
         host: configService.get('REDIS_HOST') || 'localhost',
         port: parseInt(configService.get('REDIS_PORT') || '6379', 10),
@@ -40,10 +48,12 @@ import * as redisStore from 'cache-manager-redis-store';
     ThrottlerModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (config: ConfigService) => [{
-        ttl: 60000,
-        limit: 100,
-      }],
+      useFactory: (configService: ConfigService) => [
+        {
+          ttl: configService.get('THROTTLE_TTL', 60000),
+          limit: configService.get('THROTTLE_LIMIT', 100),
+        },
+      ],
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -71,6 +81,16 @@ import * as redisStore from 'cache-manager-redis-store';
     }),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: 'APP_INTERCEPTOR',
+      useFactory: (httpService: HttpService) => {
+        setupAxiosRetryInterceptor(httpService);
+        return {};
+      },
+      inject: [HttpService],
+    },
+  ],
 })
 export class AppModule {}
