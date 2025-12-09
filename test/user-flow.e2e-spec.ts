@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from '../src/app.module';
+import { Server } from 'http';
 
 describe('User Flow (e2e)', () => {
   let app: INestApplication;
@@ -31,7 +32,7 @@ describe('User Flow (e2e)', () => {
   });
 
   it('/users/register (POST)', async () => {
-    const response = await request(app.getHttpServer())
+    const response = await request(app.getHttpServer() as unknown as Server)
       .post('/users/register')
       .send(user)
       .expect(201);
@@ -41,7 +42,7 @@ describe('User Flow (e2e)', () => {
   });
 
   it('/users/login (POST)', async () => {
-    const response = await request(app.getHttpServer())
+    const response = await request(app.getHttpServer() as unknown as Server)
       .post('/users/login')
       .send({ email: user.email, password: user.password })
       .expect(201);
@@ -51,7 +52,7 @@ describe('User Flow (e2e)', () => {
   });
 
   it('/users/profile (GET) - Protected Route', async () => {
-    const response = await request(app.getHttpServer())
+    const response = await request(app.getHttpServer() as unknown as Server)
       .get('/users/profile')
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(200);

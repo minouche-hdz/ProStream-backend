@@ -3,6 +3,8 @@ import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from '../src/app.module';
 
+import { Server } from 'http';
+
 describe('AppController (e2e)', () => {
   let app: INestApplication;
 
@@ -22,6 +24,8 @@ describe('AppController (e2e)', () => {
   });
 
   it('/ (GET)', () => {
-    return request(app.getHttpServer()).get('/').expect(200);
+    return request(app.getHttpServer() as unknown as Server)
+      .get('/')
+      .expect(200);
   });
 });

@@ -13,6 +13,26 @@ import { ChildProcess } from 'child_process';
 // ffmpeg.setFfmpegPath('/opt/homebrew/bin/ffmpeg'); // Exemple pour macOS avec Homebrew
 // ffmpeg.setFfprobePath('/opt/homebrew/bin/ffprobe'); // Exemple pour macOS avec Homebrew
 
+interface FfprobeStream {
+  index: number;
+  codec_type?: string;
+  codec_name?: string;
+  width?: number;
+  height?: number;
+  bit_rate?: number;
+  tags?: {
+    language?: string;
+    [key: string]: any;
+  };
+  [key: string]: any;
+}
+
+interface FfprobeData {
+  streams: FfprobeStream[];
+  format?: any;
+  chapters?: any[];
+}
+
 @Injectable()
 export class StreamingService implements OnModuleDestroy {
   private readonly logger = new Logger(StreamingService.name);
@@ -102,13 +122,13 @@ export class StreamingService implements OnModuleDestroy {
     });
   }
 
-  private async probeStream(url: string): Promise<any> {
+  private async probeStream(url: string): Promise<FfprobeData> {
     return new Promise((resolve, reject) => {
       ffmpeg.ffprobe(url, (err, metadata) => {
         if (err) {
           return reject(new Error(`FFprobe error: ${err.message}`));
         }
-        resolve(metadata);
+        resolve(metadata as unknown as FfprobeData);
       });
     });
   }
@@ -128,11 +148,11 @@ export class StreamingService implements OnModuleDestroy {
       fs.mkdirSync(sessionDir, { recursive: true });
 
       const metadata = await this.probeStream(mkvUrl);
-      const videoStream = metadata.streams.find(
-        (s: any) => s.codec_type === 'video',
+      const videoStream: FfprobeStream | undefined = metadata.streams.find(
+        (s) => s.codec_type === 'video',
       );
-      const audioStreams = metadata.streams.filter(
-        (s: any) => s.codec_type === 'audio',
+      const audioStreams: FfprobeStream[] = metadata.streams.filter(
+        (s) => s.codec_type === 'audio',
       );
 
       if (!videoStream) {
@@ -155,7 +175,7 @@ export class StreamingService implements OnModuleDestroy {
       // 1. Démarrer la conversion vidéo en arrière-plan
       this.startVideoConversion(
         mkvUrl,
-        videoStream.index as number,
+        videoStream.index,
         videoPlaylistPath,
         videoSegmentPath,
         sessionId,
@@ -173,7 +193,7 @@ export class StreamingService implements OnModuleDestroy {
 
         this.startAudioConversion(
           mkvUrl,
-          audio.index as number,
+          audio.index,
           audioPlaylistPath,
           audioSegmentPath,
           sessionId,
