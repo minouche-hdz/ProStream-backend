@@ -63,3 +63,6 @@ hls_temp/
 
 # Docker volumes
 postgres_data/
+
+# Shell scripts
+*.sh
