@@ -4,10 +4,8 @@ import { ConfigService } from '@nestjs/config';
 import { map } from 'rxjs/operators';
 import { lastValueFrom } from 'rxjs';
 import { AxiosResponse } from 'axios'; // Import AxiosResponse
-import {
-  ProwlarrSearchResult,
-  ProwlarrIndexer,
-} from './interfaces/prowlarr.interface';
+import { ProwlarrIndexer, ProwlarrItem } from './interfaces/prowlarr.interface';
+import { ProwlarrSearchResultDto } from './dto/prowlarr-responses.dto';
 
 @Injectable()
 export class ProwlarrService {
@@ -24,7 +22,7 @@ export class ProwlarrService {
       this.configService.get<string>('PROWLARR_BASE_URL') ?? ''; // Added nullish coalescing
   }
 
-  async search(query: string): Promise<ProwlarrSearchResult> {
+  async search(query: string): Promise<ProwlarrSearchResultDto> {
     return lastValueFrom(
       this.httpService
         .get(`${this.PROWLARR_BASE_URL}/api/v1/search`, {
@@ -34,14 +32,14 @@ export class ProwlarrService {
           },
         })
         .pipe(
-          map((response: AxiosResponse<ProwlarrSearchResult>) => {
-            // Filtrer pour ne garder que les fichiers .mkv
-            const filteredResults = response.data.results.filter((item) =>
-              item.title.toLowerCase().endsWith('.mkv'),
+          map((response: AxiosResponse<ProwlarrItem[]>) => {
+            if (!response.data || !Array.isArray(response.data)) {
+              return { results: [] };
+            }
+            const filteredResults = response.data.filter(
+              (result) => !/iso|dvd/i.test(result.title),
             );
-            return {
-              results: filteredResults,
-            };
+            return { results: filteredResults };
           }),
         ),
     );
