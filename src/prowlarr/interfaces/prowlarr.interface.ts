@@ -1,4 +1,6 @@
-export type ProwlarrSearchResult = ProwlarrItem[];
+export interface ProwlarrSearchResult {
+  results: ProwlarrItem[];
+}
 
 export interface ProwlarrIndexer {
   indexerUrls: string[];

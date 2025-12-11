@@ -3,10 +3,8 @@ import { ProwlarrService } from './prowlarr.service';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { of, throwError } from 'rxjs';
-import {
-  ProwlarrSearchResult,
-  ProwlarrIndexer,
-} from './interfaces/prowlarr.interface';
+import { ProwlarrIndexer, ProwlarrItem } from './interfaces/prowlarr.interface';
+import { ProwlarrSearchResultDto } from './dto/prowlarr-responses.dto';
 
 class MockConfigService {
   get = jest.fn((key: string) => {
@@ -64,7 +62,15 @@ describe('ProwlarrService', () => {
     });
 
     it('should return search results', async () => {
-      const mockSearchResults: ProwlarrSearchResult = {
+      const mockRawResults: ProwlarrItem[] = [
+        {
+          title: 'Movie Title.mkv',
+          size: 1000,
+          publishDate: '2023-01-01',
+          downloadUrl: 'download1',
+        },
+      ];
+      const mockMappedResults: ProwlarrSearchResultDto = {
         results: [
           {
             title: 'Movie Title.mkv',
@@ -75,11 +81,11 @@ describe('ProwlarrService', () => {
         ],
       };
       (httpService.get as jest.Mock).mockReturnValue(
-        of({ data: mockSearchResults }),
+        of({ data: mockRawResults }),
       );
 
       const result = await service.search('test query');
-      expect(result).toEqual(mockSearchResults);
+      expect(result).toEqual(mockMappedResults);
       expect(httpService.get).toHaveBeenCalledWith(
         `${service['PROWLARR_BASE_URL']}/api/v1/search`,
         {

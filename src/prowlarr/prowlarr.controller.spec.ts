@@ -2,10 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ProwlarrController } from './prowlarr.controller';
 import { ProwlarrService } from './prowlarr.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard/jwt-auth.guard';
-import {
-  ProwlarrSearchResult,
-  ProwlarrIndexer,
-} from './interfaces/prowlarr.interface';
+import { ProwlarrIndexer } from './interfaces/prowlarr.interface';
+import { ProwlarrSearchResultDto } from './dto/prowlarr-responses.dto';
 
 describe('ProwlarrController', () => {
   let controller: ProwlarrController;
@@ -43,7 +41,7 @@ describe('ProwlarrController', () => {
   describe('search', () => {
     it('should return search results from the service', async () => {
       const query = 'test query';
-      const mockResults: ProwlarrSearchResult = {
+      const mockResults: ProwlarrSearchResultDto = {
         results: [
           {
             title: 'Movie 1',
