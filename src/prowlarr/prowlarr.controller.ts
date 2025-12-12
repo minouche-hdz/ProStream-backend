@@ -9,8 +9,8 @@ import {
   ApiQuery,
 } from '@nestjs/swagger';
 import {
-  ProwlarrSearchResultDto,
   ProwlarrIndexerDto,
+  ProwlarrSearchResultDto,
 } from './dto/prowlarr-responses.dto';
 
 @ApiTags('prowlarr')

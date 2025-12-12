@@ -7,7 +7,7 @@ export interface ProwlarrIndexer {
   definitionName: string;
 }
 
-interface ProwlarrItem {
+export interface ProwlarrItem {
   title: string;
   size: number;
   publishDate: string;
