@@ -24,36 +24,50 @@ export class ProwlarrService {
   }
 
   async search(query: string): Promise<ProwlarrSearchResultDto> {
+    const url = `${this.PROWLARR_BASE_URL}/api/v1/search`;
+    const params = {
+      apikey: this.PROWLARR_API_KEY,
+      query,
+    };
+
     return lastValueFrom(
-      this.httpService
-        .get(`${this.PROWLARR_BASE_URL}/api/v1/search`, {
-          params: {
-            apikey: this.PROWLARR_API_KEY,
-            query,
-          },
-        })
-        .pipe(
-          map((response: AxiosResponse<ProwlarrItem[]>) => { // Le type de la réponse brute est ProwlarrItem[]
-            console.log('Prowlarr API Raw Response Data:', response.data); // Log la réponse brute
-            if (!response.data || !Array.isArray(response.data)) {
-              return { results: [] };
-            }
-            const rawResults = response.data;
-            // Réactiver le filtre pour exclure les résultats contenant 'iso' ou 'dvd'
-            const filteredResults = rawResults.filter(
-              (result) => !/iso|dvd/i.test(result.title),
-            );
-            // Mapper les résultats vers ProwlarrItemDto pour correspondre au DTO Swagger
-            const mappedResults = filteredResults.map((item) => ({
-              title: item.title,
-              size: item.size,
-              publishDate: item.publishDate,
-              downloadUrl: item.downloadUrl,
-            }));
-            console.log('Mapped Results (filtered):', mappedResults); // Log les résultats mappés et filtrés
-            return { results: mappedResults };
-          }),
-        ),
+      this.httpService.get(url, { params }).pipe(
+        map((response: AxiosResponse<ProwlarrItem[]>) => {
+          if (!response.data || !Array.isArray(response.data)) {
+            return { results: [] };
+          }
+
+          const rawResults = response.data;
+          // Réactiver le filtre pour exclure les résultats contenant 'iso' ou 'dvd'
+          const filteredResults = rawResults;
+          // Mapper les résultats vers ProwlarrItemDto pour correspondre au DTO Swagger
+          const mappedResults = filteredResults.map((item) => ({
+            title: item.title,
+            size: item.size,
+            publishDate: item.publishDate,
+            downloadUrl: item.downloadUrl,
+            guid: item.guid,
+            age: item.age,
+            ageHours: item.ageHours,
+            ageMinutes: item.ageMinutes,
+            grabs: item.grabs,
+            indexerId: item.indexerId,
+            indexer: item.indexer,
+            sortTitle: item.sortTitle,
+            imdbId: item.imdbId,
+            tmdbId: item.tmdbId,
+            tvdbId: item.tvdbId,
+            tvMazeId: item.tvMazeId,
+            infoUrl: item.infoUrl,
+            indexerFlags: item.indexerFlags,
+            seeders: item.seeders,
+            leechers: item.leechers,
+            protocol: item.protocol,
+            fileName: item.fileName,
+          }));
+          return { results: mappedResults };
+        }),
+      ),
     );
   }
 

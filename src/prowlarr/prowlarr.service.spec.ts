@@ -64,19 +64,61 @@ describe('ProwlarrService', () => {
     it('should return search results', async () => {
       const mockRawResults: ProwlarrItem[] = [
         {
-          title: 'Movie Title.mkv',
-          size: 1000,
-          publishDate: '2023-01-01',
-          downloadUrl: 'download1',
+          title: 'Inception.2010.FRENCH.1080p.WEB.HDR10.H265-PiCKLES',
+          size: 8482560512,
+          publishDate: '2025-09-23T01:35:12Z',
+          downloadUrl:
+            'http://192.168.100.30:9696/3/download?apikey=fed2d94674884f05b08953d6b9781a98&link=eHl4UW9BQWZ0VDBwa2NBaFV1aldMY3ZiN093OFJRM013Z1lSNlI5VEZyaTh3WVArazR6WUZPWHA0c3FJK0dQWlM2S3prWkRDSnMyYkNGWUtwd1hxeC9nS0tJMmVzRWh5K3Q5TkVhaW50eTg9&file=Inception.2010.FRENCH.1080p.WEB.HDR10.H265-PiCKLES',
+          guid: 'https://www.yggtorrent.top/engine/download_torrent?id=1369131',
+          age: 66,
+          ageHours: 1594.5480831944444,
+          ageMinutes: 95672.88499167167,
+          grabs: 103,
+          indexerId: 3,
+          indexer: 'YggTorrent',
+          sortTitle: 'inception 2010 french 1080p web hdr10 h265 pickles',
+          imdbId: 0,
+          tmdbId: 0,
+          tvdbId: 0,
+          tvMazeId: 0,
+          infoUrl:
+            'https://www.yggtorrent.top/torrent/filmvid%C3%A9o/film/1369131-inception+2010+french+1080p+web+hdr10+h265-pickles',
+          indexerFlags: [],
+          seeders: 12,
+          leechers: 0,
+          protocol: 'torrent',
+          fileName:
+            'Inception.2010.FRENCH.1080p.WEB.HDR10.H265-PiCKLES.torrent',
         },
       ];
       const mockMappedResults: ProwlarrSearchResultDto = {
         results: [
           {
-            title: 'Movie Title.mkv',
-            size: 1000,
-            publishDate: '2023-01-01',
-            downloadUrl: 'download1',
+            title: 'Inception.2010.FRENCH.1080p.WEB.HDR10.H265-PiCKLES',
+            size: 8482560512,
+            publishDate: '2025-09-23T01:35:12Z',
+            downloadUrl:
+              'http://192.168.100.30:9696/3/download?apikey=fed2d94674884f05b08953d6b9781a98&link=eHl4UW9BQWZ0VDBwa2NBaFV1aldMY3ZiN093OFJRM013Z1lSNlI5VEZyaTh3WVArazR6WUZPWHA0c3FJK0dQWlM2S3prWkRDSnMyYkNGWUtwd1hxeC9nS0tJMmVzRWh5K3Q5TkVhaW50eTg9&file=Inception.2010.FRENCH.1080p.WEB.HDR10.H265-PiCKLES',
+            guid: 'https://www.yggtorrent.top/engine/download_torrent?id=1369131',
+            age: 66,
+            ageHours: 1594.5480831944444,
+            ageMinutes: 95672.88499167167,
+            grabs: 103,
+            indexerId: 3,
+            indexer: 'YggTorrent',
+            sortTitle: 'inception 2010 french 1080p web hdr10 h265 pickles',
+            imdbId: 0,
+            tmdbId: 0,
+            tvdbId: 0,
+            tvMazeId: 0,
+            infoUrl:
+              'https://www.yggtorrent.top/torrent/filmvid%C3%A9o/film/1369131-inception+2010+french+1080p+web+hdr10+h265-pickles',
+            indexerFlags: [],
+            seeders: 12,
+            leechers: 0,
+            protocol: 'torrent',
+            fileName:
+              'Inception.2010.FRENCH.1080p.WEB.HDR10.H265-PiCKLES.torrent',
           },
         ],
       };
