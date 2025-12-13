@@ -12,4 +12,22 @@ export interface ProwlarrItem {
   size: number;
   publishDate: string;
   downloadUrl: string;
+  guid: string;
+  age: number;
+  ageHours: number;
+  ageMinutes: number;
+  grabs: number;
+  indexerId: number;
+  indexer: string;
+  sortTitle: string;
+  imdbId: number;
+  tmdbId: number;
+  tvdbId: number;
+  tvMazeId: number;
+  infoUrl: string;
+  indexerFlags: string[];
+  seeders: number;
+  leechers: number;
+  protocol: string;
+  fileName: string;
 }
